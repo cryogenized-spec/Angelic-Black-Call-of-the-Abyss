@@ -1,0 +1,53 @@
+name: Pass 4 asset materialization
+
+on:
+  push:
+    branches: [main, pass-4-assets]
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
+          repository: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name || github.repository }}
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Materialize prototype assets
+        run: python3 tools/materialize-assets.py
+
+      - name: Verify no external runtime asset URLs remain
+        run: |
+          if grep -RInE 'image\.qwenlm\.ai|cdn\.jsdelivr\.net/fontsource/css|fonts\.googleapis\.com|fonts\.gstatic\.com' src --include='*.html' --include='*.css' --include='*.js'; then
+            echo 'External runtime asset URL detected.'
+            exit 1
+          fi
+
+      - name: Commit materialized assets
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets src tools/materialize-assets.py .github/workflows/pass4-assets.yml
+          if git diff --cached --quiet; then
+            echo 'No generated changes.'
+            exit 0
+          fi
+          git commit -m 'Pass 4: materialize prototype assets locally'
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          else
+            git push origin HEAD:${{ github.ref_name }}
+          fi
