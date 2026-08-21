@@ -3,8 +3,8 @@ name: Pass 4 asset materialization
 on:
   push:
     branches: [main, pass-4-assets]
-  pull_request:
-    types: [opened, synchronize]
+  pull_request_target:
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: write
@@ -17,14 +17,9 @@ jobs:
       - name: Checkout target branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
-          repository: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.ref || github.ref_name }}
+          repository: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name || github.repository }}
           fetch-depth: 0
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
 
       - name: Materialize prototype assets
         run: python3 tools/materialize-assets.py
@@ -46,7 +41,7 @@ jobs:
             exit 0
           fi
           git commit -m 'Pass 4: materialize prototype assets locally'
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
+          if [ "${{ github.event_name }}" = "pull_request_target" ]; then
             git push origin HEAD:${{ github.event.pull_request.head.ref }}
           else
             git push origin HEAD:${{ github.ref_name }}
