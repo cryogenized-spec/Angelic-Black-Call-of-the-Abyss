@@ -49,8 +49,7 @@ function loop(now){
   else if(mode==='over'||mode==='finalfall'||mode==='finalend'){ ctx.fillStyle='#000'; ctx.fillRect(0,0,VW,VH); }
   else if(mode==='levelup'||mode==='inventory'||mode==='vendor'||mode==='tutorial'||mode==='assign'){ drawGame(); }
   else if(mode==='cutscene'){ tGlobal+=dt; updateFx(dt); progressRise(dt); stepCS(dt); drawGame(); drawCSOverlay(ctx); }
-  ctx.fillStyle='rgba(5,2,10,0.15)';
-  for(var sy=0;sy<VH;sy+=3)ctx.fillRect(0,sy,VW,1);
+  if(engine)engine.drawScanlines(ctx);
   if(engine)engine.endFrame(now);
   requestAnimationFrame(loop);
 }
