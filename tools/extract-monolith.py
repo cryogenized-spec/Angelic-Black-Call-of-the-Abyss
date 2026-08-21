@@ -17,7 +17,7 @@ if source.count(script_open) != 1 or source.count(script_close) != 1:
 
 s0 = source.index(style_open)
 s1 = source.index(style_close, s0)
-j0 = source.index(script_open)
+j0 = source.index(script_open, s1)
 j1 = source.index(script_close, j0)
 
 css = source[s0 + len(style_open):s1].lstrip('\n').rstrip() + '\n'
