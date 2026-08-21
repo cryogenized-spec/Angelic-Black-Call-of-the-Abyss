@@ -16,7 +16,7 @@ No backend or server runtime is required.
 
 ## Current entry point
 
-`index.html` is the GitHub Pages entry point. During Pass 2 the canonical runtime has moved to `src/game.html` while the original `Main.html` is retained as a rollback/reference copy.
+`index.html` is the GitHub Pages entry point. During Pass 2 the canonical runtime moved to `src/game.html`, while the original `Main.html` is retained as a rollback/reference copy. Pass 2B now extracts the canonical runtime's CSS and JavaScript into `src/css/game.css` and `src/js/game.js` without changing runtime behaviour.
 
 ## Development roadmap
 
@@ -26,7 +26,7 @@ Establish a reproducible baseline, GitHub Pages entry point, smoke-test contract
 
 ### Pass 2 — Engine Refactor
 
-Stage the monolithic HTML extraction into explicit static boundaries while preserving gameplay behaviour. The first step relocates the canonical runtime; later Pass 2 commits will extract CSS, engine state, gameplay systems, narrative, UI, and audio modules.
+Stage the monolithic HTML extraction into explicit static boundaries while preserving gameplay behaviour. Pass 2A established the canonical runtime boundary; Pass 2B extracted CSS and JavaScript; Pass 2C will split the runtime JavaScript into logical classic-script modules while preserving declaration order and global compatibility.
 
 ### Pass 3 — Local Assets
 
