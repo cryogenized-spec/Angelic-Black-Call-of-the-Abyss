@@ -9,12 +9,22 @@
       return;
     }
   }
-  var script=document.createElement('script');
-  script.src='js/modules/20-engine-stability.js';
-  script.onload=function(){
-    if(window.__ANGELIC_BLACK_ENGINE__)runtime.ready=true;
-    else runtime.reportFatal(new Error('Engine stability supervisor failed to initialize.'));
-  };
-  script.onerror=function(){runtime.reportFatal(new Error('Failed to load engine stability supervisor.'));};
-  document.body.appendChild(script);
+
+  function load(src,onload,onerror){
+    var script=document.createElement('script');
+    script.src=src;
+    script.onload=onload;
+    script.onerror=onerror;
+    document.body.appendChild(script);
+  }
+  function fail(message){runtime.reportFatal(new Error(message));}
+
+  load('js/modules/20-engine-stability.js',function(){
+    if(!window.__ANGELIC_BLACK_ENGINE__){fail('Engine stability supervisor failed to initialize.');return;}
+    load('js/modules/21-gameplay-integrity.js',function(){
+      load('js/modules/22-art-integration.js',function(){
+        runtime.ready=true;
+      },function(){fail('Failed to load cinematic art integration module.');});
+    },function(){fail('Failed to load gameplay integrity module.');});
+  },function(){fail('Failed to load engine stability supervisor.');});
 })();
