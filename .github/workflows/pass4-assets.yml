@@ -1,20 +1,22 @@
 name: Pass 4 asset materialization
 
 on:
-  push:
-    branches:
-      - 'pass-4-assets'
+  pull_request:
+    types: [opened, synchronize]
 
 permissions:
   contents: write
 
 jobs:
   materialize:
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout branch
+      - name: Checkout PR head
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
           fetch-depth: 0
 
       - name: Set up Node
@@ -42,4 +44,4 @@ jobs:
             exit 0
           fi
           git commit -m 'Pass 4: materialize prototype assets locally'
-          git push
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
