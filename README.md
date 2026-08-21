@@ -16,7 +16,7 @@ No backend or server runtime is required.
 
 ## Current entry point
 
-`index.html` is the GitHub Pages entry point and forwards to the existing `Main.html` prototype. `Main.html` remains the authoritative game source during Pass 1.
+`index.html` is the GitHub Pages entry point. During Pass 2 the canonical runtime has moved to `src/game.html` while the original `Main.html` is retained as a rollback/reference copy.
 
 ## Development roadmap
 
@@ -26,7 +26,7 @@ Establish a reproducible baseline, GitHub Pages entry point, smoke-test contract
 
 ### Pass 2 — Engine Refactor
 
-Split the monolithic HTML into maintainable static JS/CSS modules while preserving gameplay behaviour.
+Stage the monolithic HTML extraction into explicit static boundaries while preserving gameplay behaviour. The first step relocates the canonical runtime; later Pass 2 commits will extract CSS, engine state, gameplay systems, narrative, UI, and audio modules.
 
 ### Pass 3 — Local Assets
 
@@ -52,6 +52,7 @@ Replace prototype cinematic artwork with authored final art.
 
 Polish or replace procedural gameplay sprites with a consistent authored sprite system.
 
-## Pass 1 documentation
+## Pass documentation
 
-See [`docs/PASS-1-BASELINE.md`](docs/PASS-1-BASELINE.md).
+- [`docs/PASS-1-BASELINE.md`](docs/PASS-1-BASELINE.md)
+- [`docs/PASS-2-ENGINE-REFACTOR.md`](docs/PASS-2-ENGINE-REFACTOR.md)
