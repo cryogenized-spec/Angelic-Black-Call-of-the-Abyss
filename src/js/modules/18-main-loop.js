@@ -4,6 +4,8 @@ function drawGame(){ drawBackdrop(ctx); drawSkyFx(ctx); drawWorld(ctx); drawFog(
   if(gameFade>0){ ctx.fillStyle='rgba(0,0,0,'+clamp(gameFade,0,1).toFixed(2)+')'; ctx.fillRect(0,0,VW,VH); } }
 var lastT=performance.now();
 function loop(now){
+  var engine=window.__ANGELIC_BLACK_ENGINE__;
+  if(engine)engine.beginFrame(now);
   var dt=Math.min(0.05,(now-lastT)/1000); lastT=now;
   if(gameFade>0&&mode==='playing')gameFade-=dt;
   /* controls hidden during cutscenes for full viewing */
@@ -49,6 +51,7 @@ function loop(now){
   else if(mode==='cutscene'){ tGlobal+=dt; updateFx(dt); progressRise(dt); stepCS(dt); drawGame(); drawCSOverlay(ctx); }
   ctx.fillStyle='rgba(5,2,10,0.15)';
   for(var sy=0;sy<VH;sy+=3)ctx.fillRect(0,sy,VW,1);
+  if(engine)engine.endFrame(now);
   requestAnimationFrame(loop);
 }
 
