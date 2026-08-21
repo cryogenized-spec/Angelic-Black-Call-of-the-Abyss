@@ -9,5 +9,12 @@
       return;
     }
   }
-  runtime.ready=true;
+  var script=document.createElement('script');
+  script.src='js/modules/20-engine-stability.js';
+  script.onload=function(){
+    if(window.__ANGELIC_BLACK_ENGINE__)runtime.ready=true;
+    else runtime.reportFatal(new Error('Engine stability supervisor failed to initialize.'));
+  };
+  script.onerror=function(){runtime.reportFatal(new Error('Failed to load engine stability supervisor.'));};
+  document.body.appendChild(script);
 })();
