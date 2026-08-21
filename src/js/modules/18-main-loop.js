@@ -51,4 +51,23 @@ function loop(now){
   for(var sy=0;sy<VH;sy+=3)ctx.fillRect(0,sy,VW,1);
   requestAnimationFrame(loop);
 }
-requestAnimationFrame(loop);
+
+(function loadRuntimeHardening(){
+  var script=document.createElement('script');
+  script.src='js/modules/19-runtime-hardening.js';
+  script.onload=function(){
+    if(window.__ANGELIC_BLACK_RUNTIME__&&!window.__ANGELIC_BLACK_RUNTIME__.ready){
+      window.__ANGELIC_BLACK_RUNTIME__.reportFatal(new Error('Runtime dependency validation did not complete.'));
+      return;
+    }
+    requestAnimationFrame(loop);
+  };
+  script.onerror=function(){
+    if(window.__ANGELIC_BLACK_RUNTIME__){
+      window.__ANGELIC_BLACK_RUNTIME__.reportFatal(new Error('Failed to load runtime hardening module.'));
+      return;
+    }
+    requestAnimationFrame(loop);
+  };
+  document.body.appendChild(script);
+})();
