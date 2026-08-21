@@ -1,18 +1,26 @@
 /* ================= FX-ONLY UPDATE ================= */
+function compactAlive(list,predicate){
+  var write=0;
+  for(var read=0;read<list.length;read++){
+    var item=list[read];
+    if(predicate(item))list[write++]=item;
+  }
+  list.length=write;
+}
 function updateFx(dt){
   shakeT=Math.max(0,shakeT-dt);
   skyFxT=Math.max(0,skyFxT-dt);
   flashT=Math.max(0,flashT-dt);
   var i;
   for(i=0;i<parts.length;i++){ var q=parts[i]; q.life-=dt; q.x+=q.vx*dt; q.y+=q.vy*dt; q.vy+=(q.g||0)*dt; }
-  parts=parts.filter(function(qq){return qq.life>0;});
+  compactAlive(parts,function(qq){return qq.life>0;});
   for(i=0;i<floaters.length;i++){ var fl=floaters[i]; fl.life-=dt; fl.y-=30*dt; }
-  floaters=floaters.filter(function(fl2){return fl2.life>0;});
+  compactAlive(floaters,function(fl2){return fl2.life>0;});
   for(i=0;i<rings.length;i++){ var rg=rings[i]; rg.life-=dt; rg.r+=dt*160; }
-  rings=rings.filter(function(rg2){return rg2.life>0;});
+  compactAlive(rings,function(rg2){return rg2.life>0;});
   for(i=0;i<debris.length;i++){ var db=debris[i]; db.life-=dt; db.x+=db.vx*dt; db.y+=db.vy*dt;
     db.vy+=(db.g||0)*dt; db.rot+=db.vr*dt; }
-  debris=debris.filter(function(db2){return db2.life>0&&db2.y<VH+40;});
+  compactAlive(debris,function(db2){return db2.life>0&&db2.y<VH+40;});
 
   if(corpseFx){ var cf=corpseFx; cf.t+=dt;
     if(cf.t<0.55&&Math.random()<0.9){
@@ -57,4 +65,3 @@ function progressRise(dt){
     if(m.rise<1){ m.rise=Math.min(1,m.rise+dt/1.2);
       if(Math.random()<0.5)parts.push({x:m.x+rnd(-10,10),y:GROUND+rnd(-2,4),vx:rnd(-30,30),vy:rnd(-80,-20),g:300,life:0.5,max:0.5,c:'#3a2c1f',size:2}); } }
 }
-
