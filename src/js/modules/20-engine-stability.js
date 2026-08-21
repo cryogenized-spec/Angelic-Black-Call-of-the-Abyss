@@ -48,6 +48,7 @@
     if(ms>stability.expectedFrameMs*2.5)stability.droppedFrames++;stability.frames++;
     if(stability.frames%30===0)updatePanel();
     if(now-stability.lastValidation>1000){stability.lastValidation=now;validateGameState();}
+    if(root.__ANGELIC_BLACK_GAMEPLAY_INTEGRITY__)root.__ANGELIC_BLACK_GAMEPLAY_INTEGRITY__.tick();
   };
   stability.handleVisibility=function(){
     if(document.hidden){
@@ -72,4 +73,11 @@
   }
   document.addEventListener('visibilitychange',stability.handleVisibility);
   root.__ANGELIC_BLACK_ENGINE__=stability;
+
+  var integrityScript=document.createElement('script');
+  integrityScript.src='js/modules/21-gameplay-integrity.js';
+  integrityScript.onerror=function(){
+    if(runtime&&typeof runtime.reportFatal==='function')runtime.reportFatal(new Error('Failed to load gameplay integrity monitor.'));
+  };
+  document.body.appendChild(integrityScript);
 })(window);
