@@ -23,7 +23,9 @@
     if(!window.__ANGELIC_BLACK_ENGINE__){fail('Engine stability supervisor failed to initialize.');return;}
     load('js/modules/21-gameplay-integrity.js',function(){
       load('js/modules/22-art-integration.js',function(){
-        runtime.ready=true;
+        load('js/modules/23-orientation.js',function(){
+          runtime.ready=true;
+        },function(){fail('Failed to load landscape orientation module.');});
       },function(){fail('Failed to load cinematic art integration module.');});
     },function(){fail('Failed to load gameplay integrity module.');});
   },function(){fail('Failed to load engine stability supervisor.');});

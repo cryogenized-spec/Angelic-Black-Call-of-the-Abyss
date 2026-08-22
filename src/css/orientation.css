@@ -1,0 +1,31 @@
+/* Landscape-first presentation */
+#orientationGate{
+  position:fixed;
+  inset:0;
+  z-index:200000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  box-sizing:border-box;
+  background:rgba(5,2,10,.96);
+  color:#e8e0d2;
+  text-align:center;
+  font-family:"EB Garamond",serif;
+}
+#orientationGate.show{display:flex}
+#orientationGate .og-panel{
+  max-width:520px;
+  padding:28px 30px;
+  border:1px solid rgba(216,169,78,.65);
+  background:rgba(12,7,18,.96);
+  box-shadow:0 0 40px rgba(116,70,171,.24);
+}
+#orientationGate h2{
+  margin:0 0 12px;
+  font-family:"Grenze Gotisch",serif;
+  letter-spacing:.08em;
+  color:#d8a94e;
+}
+#orientationGate p{margin:8px 0;line-height:1.45}
+#orientationGate .og-sub{opacity:.8;font-size:.95em}

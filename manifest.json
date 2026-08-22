@@ -1,0 +1,12 @@
+{
+  "name": "Angelic Black — Call of the Abyss",
+  "short_name": "Angelic Black",
+  "description": "A browser-first gothic action/RPG.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#05030a",
+  "theme_color": "#0b0611",
+  "lang": "en"
+}
