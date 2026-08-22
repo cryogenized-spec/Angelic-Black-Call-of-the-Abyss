@@ -3,7 +3,24 @@
   var gate=null;
   var attempted=false;
 
+  function ensureHead(){
+    if(!document.querySelector('link[rel="manifest"]')){
+      var manifest=document.createElement('link');
+      manifest.rel='manifest';
+      manifest.href='../manifest.json';
+      document.head.appendChild(manifest);
+    }
+    if(!document.querySelector('link[data-ab-orientation-css]')){
+      var css=document.createElement('link');
+      css.rel='stylesheet';
+      css.href='css/orientation.css';
+      css.setAttribute('data-ab-orientation-css','1');
+      document.head.appendChild(css);
+    }
+  }
+
   function ensureGate(){
+    ensureHead();
     if(gate)return;
     gate=document.createElement('div');
     gate.id='orientationGate';
@@ -49,6 +66,7 @@
   }
 
   root.__ANGELIC_BLACK_ORIENTATION__={requestLandscape:requestLandscape,refresh:showGate};
+  ensureHead();
   document.addEventListener('pointerdown',requestLandscape,{once:true,capture:true});
   root.addEventListener('orientationchange',showGate);
   root.addEventListener('resize',showGate);
