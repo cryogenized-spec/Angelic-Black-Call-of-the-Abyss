@@ -1,5 +1,7 @@
 /* ================= SETUP ================= */
-var VW=540, VH=675, GROUND=520, WORLD_W=2880, CONTROL_BAND=112;
+/* Landscape-first logical presentation viewport.
+ * World/simulation coordinates remain authoritative; 960x540 is the render surface. */
+var VW=960, VH=540, GROUND=420, WORLD_W=2880, CONTROL_BAND=88;
 var GRAV=1700, SPEED=235, JUMPV=-620;
 var COST_BOLT=4, COST_CHARGED=18, COST_HEAVY=25, COST_SWORD=75, COST_SUMMON=30, COST_SHIELD=20;
 var CD_HEAVY=10, CD_SWORD=12, CD_SHIELD=8, CHARGE_FULL=2;
@@ -24,13 +26,10 @@ var COMIC_PAGES=[
  'https://image.qwenlm.ai/public_source/6d91cf12-514b-4a8a-a18d-18b6062acf4c/15da3b137-4038-45db-b5bf-3eae0e1faa48.png',
  PRESTAGE_IMG];
 var COMIC_CAPTIONS=[
- {top:'Before the kingdoms learned to fear the dead, there was a Queen whose name was struck from every record.',
-  bottom:'Her own court betrayed her. The paladins of the corrupted order sealed her beneath the First Tomb.'},
- {top:'Centuries passed. Roots and rust ate the seals.',
-  bottom:'Darkness gathered where honour was broken — and the seal grew thin.'},
- {top:'On the night the moon turned away, the seal broke.',
-  bottom:'She rose. And the dead remembered their Queen.'},
- {top:'', bottom:'THE FIRST TOMB — graveyard of the Quiet Court.'}];
+ {top:'Before the kingdoms learned to fear the dead, there was a Queen whose name was struck from every record.',bottom:'Her own court betrayed her. The paladins of the corrupted order sealed her beneath the First Tomb.'},
+ {top:'Centuries passed. Roots and rust ate the seals.',bottom:'Darkness gathered where honour was broken — and the seal grew thin.'},
+ {top:'On the night the moon turned away, the seal broke.',bottom:'She rose. And the dead remembered their Queen.'},
+ {top:'',bottom:'THE FIRST TOMB — graveyard of the Quiet Court.'}];
 var LORE=[
  'Before the kingdoms learned to fear the dead, there was a queen whose name was struck from every record.',
  'Her kingdom fell. Her enemies buried her. They forgot that the dead remember.',
@@ -40,7 +39,7 @@ var stageEl=document.getElementById('stage');
 var cvs=document.getElementById('gameCanvas');
 var ctx=cvs.getContext('2d');
 cvs.width=VW; cvs.height=VH; ctx.imageSmoothingEnabled=false;
-function fitStage(){var sc=Math.min(window.innerWidth/VW, window.innerHeight/VH);
+function fitStage(){var sc=Math.min(window.innerWidth/VW,window.innerHeight/VH);
   stageEl.style.width=(VW*sc)+'px'; stageEl.style.height=(VH*sc)+'px';}
 window.addEventListener('resize',fitStage); fitStage();
 var isTouch=('ontouchstart' in window)||navigator.maxTouchPoints>0;
@@ -54,4 +53,3 @@ if(isTouch)document.body.classList.add('touch');
   gx.putImageData(id,0,0);
   document.getElementById('grain').style.backgroundImage='url('+gc.toDataURL()+')';
 })();
-
