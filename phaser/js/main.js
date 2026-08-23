@@ -18,7 +18,14 @@
       width: cfg.width,
       height: cfg.height
     },
-    scene: [ BootScene, MigrationProbeScene ],
+    physics: {
+      default: 'arcade',
+      arcade: {
+        gravity: { y: cfg.gravityY },
+        debug: false
+      }
+    },
+    scene: [ BootScene, GameScene ],
     banner: false
   });
 
