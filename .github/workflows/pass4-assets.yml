@@ -24,10 +24,10 @@ jobs:
       - name: Materialize prototype assets
         run: python3 tools/materialize-assets.py
 
-      - name: Verify no external runtime asset URLs remain
+      - name: Verify no external runtime asset URLs remain in shipped Phaser app
         run: |
-          if grep -RInE 'image\.qwenlm\.ai|cdn\.jsdelivr\.net/fontsource/css|fonts\.googleapis\.com|fonts\.gstatic\.com' src --include='*.html' --include='*.css' --include='*.js'; then
-            echo 'External runtime asset URL detected.'
+          if grep -RInE 'image\.qwenlm\.ai|cdn\.jsdelivr\.net/fontsource/css|fonts\.googleapis\.com|fonts\.gstatic\.com' phaser --include='*.html' --include='*.css' --include='*.js'; then
+            echo 'External image/font runtime asset URL detected in the shipped Phaser app.'
             exit 1
           fi
 
