@@ -44,15 +44,37 @@ def patch_file(path: Path, replacements: dict[str, str]) -> None:
         path.write_text(text, encoding='utf-8')
 
 
+def materialize_images(items: list[dict]) -> dict[str, str]:
+    replacements: dict[str, str] = {}
+    missing_local: list[str] = []
+
+    for item in items:
+        path_value = item.get('path')
+        if not path_value:
+            raise SystemExit(f"Asset manifest image entry is missing 'path': {item!r}")
+
+        target = ROOT / path_value
+        url = item.get('url')
+
+        if url:
+            download(url, target)
+            replacements[url] = '../' + path_value
+        elif not target.is_file():
+            missing_local.append(path_value)
+
+    if missing_local:
+        raise SystemExit(
+            'Local/uploaded image assets are missing: ' + ', '.join(missing_local)
+        )
+
+    return replacements
+
+
 def main() -> None:
     manifest = json.loads(MANIFEST.read_text(encoding='utf-8'))
-    image_replacements: dict[str, str] = {}
-    for item in manifest['images']:
-        target = ROOT / item['path']
-        download(item['url'], target)
-        image_replacements[item['url']] = '../' + item['path']
+    image_replacements = materialize_images(manifest.get('images', []))
 
-    for item in manifest['fonts']:
+    for item in manifest.get('fonts', []):
         vendor_font(item['package'], item['css'])
 
     patch_file(ROOT / 'src/js/modules/01-setup.js', image_replacements)
