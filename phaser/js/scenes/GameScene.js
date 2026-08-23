@@ -1,4 +1,4 @@
-/* Phaser M7 — playable parity scene. */
+/* Phaser M8 — runtime-audited playable parity scene. */
 class GameScene extends Phaser.Scene {
   constructor(){super('GameScene');}
   preload(){
@@ -15,14 +15,14 @@ class GameScene extends Phaser.Scene {
     this.createQueenFallbackTexture();this.createEnemyFallbackTextures();ANGELIC_QUEEN_ASSETS.defineAnimations(this);
     const initialTexture=this.textures.exists('queen-idle')?'queen-idle':'queen-fallback';
     this.queen=new NecroQueen(this,240,cfg.ground,initialTexture);this.physics.add.collider(this.queen,this.world.groundBody);this.queen.setAnimationState();
-    this.progression=new ProgressionSystem(this,this.queen);this.combat=new CombatSystem(this,this.queen);this.pickups=new PickupSystem(this,this.combat);this.spells=new SpellSystem(this,this.queen,this.combat);this.waves=new WaveSystem(this,this.combat);
+    this.progression=new ProgressionSystem(this,this.queen);this.combat=new CombatSystem(this,this.queen);this.pickups=new PickupSystem(this,this.combat);this.spells=new SpellSystem(this,this.queen,this.combat);this.waves=new WaveSystem(this,this.combat);this.audit=new RuntimeAudit(this);
     this.banner=this.add.text(cfg.width/2,72,'',{fontFamily:'Georgia,serif',fontSize:'24px',color:'#e7d8f2',stroke:'#0b0611',strokeThickness:7}).setOrigin(0.5).setScrollFactor(0).setAlpha(0).setDepth(200);this.bannerT=0;
     this.bossTitle=this.add.text(cfg.width/2,170,'',{fontFamily:'Georgia,serif',fontStyle:'bold',fontSize:'34px',color:'#d8a94e',stroke:'#0b0611',strokeThickness:10}).setOrigin(0.5).setScrollFactor(0).setAlpha(0).setDepth(210);this.bossTitleSub=this.add.text(cfg.width/2,212,'',{fontFamily:'Georgia,serif',fontSize:'14px',color:'#e7d8f2',stroke:'#0b0611',strokeThickness:5}).setOrigin(0.5).setScrollFactor(0).setAlpha(0).setDepth(210);
     this.completeShade=this.add.rectangle(cfg.width/2,cfg.height/2,cfg.width,cfg.height,0x05030a,0.82).setScrollFactor(0).setDepth(520).setVisible(false);
     this.completePanel=this.add.rectangle(cfg.width/2,cfg.height/2,720,300,0x100a18,0.97).setStrokeStyle(2,0xd8a94e,0.8).setScrollFactor(0).setDepth(521).setVisible(false);
     this.completeTitle=this.add.text(cfg.width/2,192,'FIRST TOMB CLEARED',{fontFamily:'Georgia,serif',fontSize:'28px',color:'#d8a94e',stroke:'#05030a',strokeThickness:7}).setOrigin(0.5).setScrollFactor(0).setDepth(522).setVisible(false);
     this.completeBody=this.add.text(cfg.width/2,245,'The Skeletal Lord is broken.\nThe dead have answered their Queen.\n\nPress R to restart the run.',{fontFamily:'monospace',fontSize:'14px',align:'center',color:'#e7d8f2',lineSpacing:10}).setOrigin(0.5).setScrollFactor(0).setDepth(522).setVisible(false);
-    this.add.text(28,22,'PHASER M7 • PLAYABLE PARITY',{fontFamily:'monospace',fontSize:'13px',color:'#d8a94e',stroke:'#000000',strokeThickness:4}).setScrollFactor(0).setDepth(200);
+    this.add.text(28,22,'PHASER M8 • RUNTIME AUDIT',{fontFamily:'monospace',fontSize:'13px',color:'#d8a94e',stroke:'#000000',strokeThickness:4}).setScrollFactor(0).setDepth(200);
     this.status=this.add.text(28,46,'',{fontFamily:'monospace',fontSize:'10px',color:'#8f9ab0',stroke:'#000000',strokeThickness:3,lineSpacing:4}).setScrollFactor(0).setDepth(200);
     this.add.text(cfg.width-28,22,'← → MOVE   SPACE / ↑ JUMP',{fontFamily:'monospace',fontSize:'10px',color:'#b18cff',stroke:'#000000',strokeThickness:3}).setOrigin(1,0).setScrollFactor(0).setDepth(200);
     this.add.text(cfg.width-28,45,'Z BOLT  X CHARGE  C LANCE  V MANTLE  B GRAVEFALL',{fontFamily:'monospace',fontSize:'9px',color:'#7dffc0',stroke:'#000000',strokeThickness:3}).setOrigin(1,0).setScrollFactor(0).setDepth(200);
@@ -31,17 +31,14 @@ class GameScene extends Phaser.Scene {
     this.onLevelOneComplete=()=>this.showLevelOneComplete();
     this.waves.startNext();this.cameras.main.startFollow(this.queen,true,0.08,0.08);this.cameras.main.setLerp(0.08,0.08);this.cameras.main.setDeadzone(240,120);
   }
-  clearEnemiesForRespawn(){
-    this.combat.enemies.clear(true,true);this.combat.projectiles.clear(true,true);this.combat.enemyProjectiles.clear(true,true);this.pickups.group.clear(true,true);this.combat.waveKills=0;
-  }
+  clearEnemiesForRespawn(){this.combat.enemies.clear(true,true);this.combat.projectiles.clear(true,true);this.combat.enemyProjectiles.clear(true,true);this.pickups.group.clear(true,true);this.combat.waveKills=0;}
   resetRun(){this.scene.restart();}
   showBanner(text){this.banner.setText(text).setAlpha(1);this.bannerT=1.8;}
   showBossTitle(title){this.bossTitle.setText(title).setAlpha(0).setScale(0.82);this.bossTitleSub.setText('THE FIRST GRAVE ANSWERS').setAlpha(0);this.tweens.add({targets:this.bossTitle,alpha:1,scale:1,duration:380,ease:'Back.Out'});this.tweens.add({targets:this.bossTitleSub,alpha:1,duration:420,delay:160});this.time.delayedCall(1900,()=>{this.tweens.add({targets:[this.bossTitle,this.bossTitleSub],alpha:0,duration:350});});this.cameras.main.shake(240,0.008);}
-  showLevelOneComplete(){
-    this.progression.state='level-complete';this.completeShade.setVisible(true);this.completePanel.setVisible(true);this.completeTitle.setVisible(true);this.completeBody.setVisible(true);this.cameras.main.shake(220,0.006);
-  }
+  showLevelOneComplete(){this.progression.state='level-complete';this.progression.syncPhysicsPause();this.completeShade.setVisible(true);this.completePanel.setVisible(true);this.completeTitle.setVisible(true);this.completeBody.setVisible(true);this.cameras.main.shake(220,0.006);}
   update(time,delta){
     const cfg=this.config,dt=Math.min(delta,50)/1000;
+    this.audit.update(time);
     if(this.progression.state==='level-complete'){if(Phaser.Input.Keyboard.JustDown(this.resetKey))this.resetRun();return;}
     this.progression.update();
     if(this.progression.state!=='playing')return;
