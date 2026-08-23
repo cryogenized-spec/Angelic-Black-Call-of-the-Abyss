@@ -3,7 +3,8 @@ class GameScene extends Phaser.Scene {
   constructor(){super('GameScene');}
   preload(){
     ANGELIC_QUEEN_ASSETS.queue(this);
-    this.load.on('loaderror',file=>{if(file&&file.key&&file.key.indexOf('queen-')===0){this.queenAssetErrors=this.queenAssetErrors||[];this.queenAssetErrors.push(file.key);}});
+    this.load.image('necro-queen-level-up','assets/art/portraits/level-up/necro-queen-level-up.png');
+    this.load.on('loaderror',file=>{if(file&&file.key&&(file.key.indexOf('queen-')===0||file.key==='necro-queen-level-up')){this.queenAssetErrors=this.queenAssetErrors||[];this.queenAssetErrors.push(file.key);}});
   }
   create(){
     const cfg=window.ANGELIC_PHASER_CONFIG;this.config=cfg;this.queenAssetErrors=this.queenAssetErrors||[];
@@ -17,7 +18,7 @@ class GameScene extends Phaser.Scene {
     this.queen=new NecroQueen(this,240,cfg.ground,initialTexture);this.physics.add.collider(this.queen,this.world.groundBody);this.queen.setAnimationState();
     this.fx=new ANGELIC_FX(this);this.progression=new ProgressionSystem(this,this.queen);this.combat=new CombatSystem(this,this.queen);this.pickups=new PickupSystem(this,this.combat);this.spells=new SpellSystem(this,this.queen,this.combat);this.waves=new WaveSystem(this,this.combat);this.audit=new RuntimeAudit(this);this.narrative=new NarrativeDirector(this);
     this.banner=this.add.text(cfg.width/2,72,'',{fontFamily:'Georgia,serif',fontSize:'24px',color:'#e7d8f2',stroke:'#0b0611',strokeThickness:7}).setOrigin(0.5).setScrollFactor(0).setAlpha(0).setDepth(200);this.bannerT=0;
-    this.bossTitle=this.add.text(cfg.width/2,170,'',{fontFamily:'Georgia,serif',fontStyle:'bold',fontSize:'34px',color:'#d8a94e',stroke:'#0b0611',strokeThickness:10}).setOrigin(0.5).setScrollFactor(0).setAlpha(0).setDepth(210);this.bossTitleSub=this.add.text(cfg.width/2,212,'',{fontFamily:'Georgia,serif',fontSize:'14px',color:'#e7d8f2',stroke:'#0b0611',strokeThickness:5}).setOrigin(0.5).setScrollFactor(0).setAlpha(0).setDepth(210);
+    this.bossTitle=this.add.text(cfg.width/2,170,'',{fontFamily:'Georgia,serif',fontStyle:'bold',fontSize:'34px',color:'#d8a94e',stroke:'#0b0611',strokeThickness:10}).setOrigin(0.5).setScrollFactor(0).setAlpha(0).setDepth(210);this.bossTitleSub=this.add.text(cfg.width/2,212,'',{fontFamily:'Georgia,serif',fontSize:'14px',color:'#e7d8f2',stroke:'#0b0611',strokeThickness:5}).setOrigin(0.5).setScrollFactor(0).setDepth(210);
     this.completeShade=this.add.rectangle(cfg.width/2,cfg.height/2,cfg.width,cfg.height,0x05030a,0.82).setScrollFactor(0).setDepth(520).setVisible(false);
     this.completePanel=this.add.rectangle(cfg.width/2,cfg.height/2,720,300,0x100a18,0.97).setStrokeStyle(2,0xd8a94e,0.8).setScrollFactor(0).setDepth(521).setVisible(false);
     this.completeTitle=this.add.text(cfg.width/2,192,'FIRST TOMB CLEARED',{fontFamily:'Georgia,serif',fontSize:'28px',color:'#d8a94e',stroke:'#05030a',strokeThickness:7}).setOrigin(0.5).setScrollFactor(0).setDepth(522).setVisible(false);
