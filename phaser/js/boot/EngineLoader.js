@@ -1,9 +1,9 @@
 /* Angelic Black — Phaser 4 loader. */
 (function(){
   'use strict';
-  const BUILD='20260823-m26';
+  const BUILD='20260823-m27';
   const SOURCES=['https://cdn.jsdelivr.net/npm/phaser@4.2.1/dist/phaser.min.js','https://cdnjs.cloudflare.com/ajax/libs/phaser/4.2.1/phaser.min.js'];
-  const scriptSources=['./js/config.js','./js/player/QueenAssetCatalog.js','./js/player/NecroQueen.js','./js/world/FirstTombWorld.js','./js/fx/FXEngine.js','./js/fx/FXEvents.js','./js/combat/EnemyRoster.js','./js/combat/PickupSystem.js','./js/combat/SpellSystem.js','./js/combat/CombatSystem.js','./js/narrative/PreludeRetainers.js','./js/combat/SkeletonSummonSystem.js','./js/combat/WaveSystem.js','./js/progression/ProgressionSystem.js','./js/debug/RuntimeAudit.js','./js/narrative/NarrativeDirector.js','./js/input/TouchControls.js','./js/ui/Level1Menu.js','./js/scenes/BootScene.js','./js/scenes/TitleScene.js','./js/scenes/GameScene.js','./js/main.js'];
+  const scriptSources=['./js/config.js','./js/player/QueenAssetCatalog.js','./js/player/NecroQueen.js','./js/world/FirstTombWorld.js','./js/fx/FXEngine.js','./js/fx/FXEvents.js','./js/combat/EnemyRoster.js','./js/combat/PickupSystem.js','./js/combat/SpellSystem.js','./js/combat/CombatSystem.js','./js/narrative/NarrativeDirector.js','./js/narrative/PreludeRetainers.js','./js/combat/SkeletonSummonSystem.js','./js/combat/WaveSystem.js','./js/progression/ProgressionSystem.js','./js/debug/RuntimeAudit.js','./js/input/TouchControls.js','./js/ui/Level1Menu.js','./js/scenes/BootScene.js','./js/scenes/TitleScene.js','./js/scenes/GameScene.js','./js/main.js'];
   const status=document.getElementById('engine-status');
   function showError(title,detail){if(!status)return;status.innerHTML=`<strong>${title}</strong><br><small>${detail}</small>`;status.style.display='block';}
   function loadScript(src){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src+(src.includes('?')?'&':'?')+'v='+BUILD;s.async=false;s.onload=resolve;s.onerror=()=>reject(new Error('Failed to load '+src));document.body.appendChild(s);});}
