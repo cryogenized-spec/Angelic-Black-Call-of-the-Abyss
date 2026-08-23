@@ -1,61 +1,7 @@
-const CACHE_NAME = 'angelic-black-phaser-v5';
+const CACHE_NAME = 'angelic-black-phaser-v6';
 const APP_SHELL = [
-  './',
-  './index.html',
-  './manifest.json',
-  './js/boot/EngineLoader.js',
-  './js/boot/PathContract.js',
-  './js/config.js',
-  './js/player/QueenAssetCatalog.js',
-  './js/player/NecroQueen.js',
-  './js/world/FirstTombWorld.js',
-  './js/fx/FXEngine.js',
-  './js/fx/FXEvents.js',
-  './js/combat/EnemyRoster.js',
-  './js/combat/PickupSystem.js',
-  './js/combat/SpellSystem.js',
-  './js/combat/CombatSystem.js',
-  './js/combat/SkeletonSummonSystem.js',
-  './js/combat/WaveSystem.js',
-  './js/progression/ProgressionSystem.js',
-  './js/debug/RuntimeAudit.js',
-  './js/narrative/NarrativeDirector.js',
-  './js/narrative/PreludeRetainers.js',
-  './js/input/TouchControls.js',
-  './js/ui/Level1Menu.js',
-  './js/scenes/BootScene.js',
-  './js/scenes/TitleScene.js',
-  './js/scenes/GameScene.js',
-  './js/main.js'
+  './','./index.html','./manifest.json','./js/boot/EngineLoader.js','./js/boot/PathContract.js','./js/config.js','./js/player/QueenAssetCatalog.js','./js/player/NecroQueen.js','./js/world/FirstTombWorld.js','./js/fx/FXEngine.js','./js/fx/FXEvents.js','./js/combat/EnemyRoster.js','./js/combat/PickupSystem.js','./js/combat/SpellSystem.js','./js/combat/CombatSystem.js','./js/combat/SkeletonSummonSystem.js','./js/combat/WaveSystem.js','./js/progression/ProgressionSystem.js','./js/debug/RuntimeAudit.js','./js/narrative/NarrativeDirector.js','./js/narrative/PreludeRetainers.js','./js/input/TouchControls.js','./js/ui/Level1Menu.js','./js/scenes/BootScene.js','./js/scenes/TitleScene.js','./js/scenes/GameScene.js','./js/main.js'
 ];
-
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
-  );
-});
-
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-    )).then(() => self.clients.claim())
-  );
-});
-
-self.addEventListener('fetch', event => {
-  const request = event.request;
-  if (request.method !== 'GET') return;
-
-  event.respondWith(
-    fetch(request).then(response => {
-      if (response && response.status === 200 && response.type !== 'opaque') {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
-      }
-      return response;
-    }).catch(() => caches.match(request).then(cached => cached || caches.match('./index.html')))
-  );
-});
+self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)).then(()=>self.skipWaiting()));});
+self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});
+self.addEventListener('fetch',event=>{const request=event.request;if(request.method!=='GET')return;event.respondWith(fetch(request).then(response=>{if(response&&response.status===200&&response.type!=='opaque'){const copy=response.clone();caches.open(CACHE_NAME).then(cache=>cache.put(request,copy));}return response;}).catch(()=>caches.match(request).then(cached=>cached||caches.match('./index.html'))));});
