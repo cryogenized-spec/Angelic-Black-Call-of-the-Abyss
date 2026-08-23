@@ -10,6 +10,8 @@ class NecroQueen extends Phaser.Physics.Arcade.Sprite {
     this.state = 'idle';
     this.coyoteTime = 0;
     this.jumpBuffer = 0;
+    this.actionTimer = 0;
+    this.actionState = null;
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
@@ -24,6 +26,16 @@ class NecroQueen extends Phaser.Physics.Arcade.Sprite {
   }
 
   updateControl(cursors, jumpPressed, dt){
+    if (this.actionTimer > 0) {
+      this.actionTimer = Math.max(0, this.actionTimer - dt);
+      this.setAccelerationX(0);
+      if (this.actionTimer === 0) {
+        this.actionState = null;
+        this.state = 'idle';
+      }
+      return;
+    }
+
     const body = this.body;
     const onFloor = body.blocked.down || body.touching.down;
 
@@ -56,7 +68,24 @@ class NecroQueen extends Phaser.Physics.Arcade.Sprite {
     else this.state = 'idle';
   }
 
+  playAction(action){
+    const key = 'queen-' + action;
+    if (!this.anims || !this.anims.exists(key)) return false;
+
+    const spec = window.ANGELIC_QUEEN_ASSETS?.actions?.[action];
+    const duration = spec ? (spec.frames / spec.fps) : 0.5;
+
+    this.actionState = action;
+    this.actionTimer = action === 'death' ? 9999 : duration + 0.05;
+    this.state = action;
+    this.setAccelerationX(0);
+    this.play(key, true);
+    return true;
+  }
+
   setAnimationState(){
+    if (this.actionTimer > 0) return;
+
     const key = 'queen-' + this.state;
     if (this.anims && this.anims.exists(key) && this.anims.currentAnim?.key !== key) {
       this.play(key, true);
