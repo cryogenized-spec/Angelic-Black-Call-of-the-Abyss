@@ -123,6 +123,13 @@ def main() -> None:
             'https://cdn.jsdelivr.net/fontsource/css/noto-serif-jp@latest/index.css': '../assets/fonts/noto-serif-jp/400.css',
         })
 
+    # Production Phaser: always enforce local font assets, even when a workflow run
+    # starts from a stale commit that still contains the former Fontsource link.
+    phaser_index = ROOT / 'phaser/index.html'
+    patch_file(phaser_index, {
+        'https://cdn.jsdelivr.net/fontsource/css/eb-garamond@latest/index.css': '../assets/fonts/eb-garamond/400.css',
+    })
+
     remaining = find_external_runtime_urls(ROOT / 'phaser')
     if remaining:
         raise SystemExit('External runtime asset URLs remain in shipped Phaser app: ' + ', '.join(remaining))
