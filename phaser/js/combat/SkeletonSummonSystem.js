@@ -14,7 +14,7 @@
   }
   class SkeletonSummonSystem{
     constructor(scene,queen){this.scene=scene;this.queen=queen;this.units=[];this.started=false;this.capturePreludeHooks();this.bindSummonSpell();scene.events.on('update',(time,delta)=>this.update(delta));}
-    capturePreludeHooks(){const Game=window.GameScene;if(!Game)return;const oldShow=Game.prototype.showPreludeRetainers;Game.prototype.showPreludeRetainers=()=>this.ensureStartingRetainers(oldShow);Game.prototype.hidePreludeRetainers=()=>{};}
+    capturePreludeHooks(){const Game=window.GameScene;if(!Game)return;const oldShow=Game.prototype.showPreludeRetainers;this._oldShow=oldShow;Game.prototype.showPreludeRetainers=()=>this.ensureStartingRetainers(oldShow);Game.prototype.hidePreludeRetainers=()=>{};}
     ensureTextures(oldShow){if(this.scene.textures.exists('prelude-retainer-a')&&this.scene.textures.exists('prelude-retainer-b'))return;if(oldShow){oldShow.call(this.scene);const temp=this.scene._preludeRetainers||[];this.scene._preludeRetainers=null;temp.forEach(x=>x?.destroy?.());}}
     ensureStartingRetainers(oldShow=null){if(this.started)return;this.started=true;this.ensureTextures(oldShow||this._oldShow);this.replenish(true);}
     bindSummonSpell(){this.scene.input.keyboard.on('keydown-S',()=>{if(this.scene.narrative?.active||this.scene.progression?.state!=='playing')return;this.scene.spells?.castSkeletons?.();});}
