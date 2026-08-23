@@ -1,52 +1,33 @@
-/* Angelic Black — Phaser M5 wave parity foundation. */
+/* Angelic Black — Phaser M6 wave system. */
 class WaveSystem {
-  constructor(scene, combat){
-    this.scene=scene; this.combat=combat;
-    this.wave=0; this.remaining=0; this.spawnTimer=0; this.intermission=0;
+  constructor(scene,combat){
+    this.scene=scene;this.combat=combat;this.wave=0;this.remaining=0;this.spawnTimer=0;this.intermission=0;this.enabled=true;this.spawnedThisWave=0;this.bossActive=false;
     this.defs=[
-      {count:8,interval:1.2},
-      {count:12,interval:1.0}
+      {count:8,interval:1.2,comp:[['knight',1]]},
+      {count:12,interval:1.0,comp:[['knight',0.55],['zombie',0.45]]},
+      {count:15,interval:0.85,comp:[['knight',0.4],['zombie',0.3],['mage',0.2],['bat',0.1]]},
+      {count:20,interval:0.7,comp:[['cultist',0.3],['knight',0.3],['zombie',0.25],['bat',0.15]]},
+      {boss:true},
+      {count:22,interval:0.65,comp:[['cultist',0.3],['mage',0.2],['zombie',0.2],['knight',0.15],['bat',0.15]]}
     ];
-    this.enabled=true;
-    this.spawnedThisWave=0;
   }
-
   startNext(){
-    this.wave += 1;
-    const def=this.defs[Math.min(this.wave-1,this.defs.length-1)];
-    this.remaining=def.count;
-    this.spawnTimer=0.05;
-    this.spawnedThisWave=0;
-    this.scene.showBanner(`WAVE ${this.wave}`);
+    this.wave+=1;const def=this.defs[Math.min(this.wave-1,this.defs.length-1)];this.spawnedThisWave=0;this.bossActive=false;
+    if(def.boss){this.remaining=0;this.bossActive=true;this.scene.showBossTitle?.('THE GRAVE LORD');this.combat.spawnEnemy('boss',Phaser.Math.Clamp(this.scene.queen.x+520,180,this.scene.config.worldWidth-180));this.scene.showBanner('THE GRAVE LORD RISES');return;}
+    this.remaining=def.count;this.spawnTimer=0.05;this.scene.showBanner(`WAVE ${this.wave}`);
   }
-
+  pickKind(comp){const r=Math.random();let acc=0;for(const [kind,weight] of comp){acc+=weight;if(r<acc)return kind;}return comp[0][0];}
   update(delta){
     const dt=Math.min(delta,50)/1000;
-    if(this.intermission>0){
-      this.intermission=Math.max(0,this.intermission-dt);
-      if(this.intermission===0) this.startNext();
-      return;
-    }
-    if(this.wave===0){ this.startNext(); return; }
-
-    const active=this.combat.enemies.countActive(true);
-    const def=this.defs[Math.min(this.wave-1,this.defs.length-1)];
+    if(this.intermission>0){this.intermission=Math.max(0,this.intermission-dt);if(this.intermission===0)this.startNext();return;}
+    if(this.wave===0){this.startNext();return;}
+    const active=this.combat.enemies.countActive(true),def=this.defs[Math.min(this.wave-1,this.defs.length-1)];
+    if(def.boss){if(active===0&&!this.intermission){this.scene.showBanner('GRAVE LORD DEFEATED');this.intermission=3.2;}return;}
     if(this.remaining>0){
       this.spawnTimer-=dt;
-      if(this.spawnTimer<=0){
-        const side=this.scene.queen.x < this.scene.config.worldWidth*0.5 ? 1 : -1;
-        const x=Phaser.Math.Clamp(this.scene.queen.x + side*(500+Math.random()*160),80,this.scene.config.worldWidth-80);
-        this.combat.spawnEnemy('knight',x);
-        this.remaining -= 1;
-        this.spawnedThisWave += 1;
-        this.spawnTimer=def.interval;
-      }
+      if(this.spawnTimer<=0){const side=this.scene.queen.x<this.scene.config.worldWidth*0.5?1:-1;const x=Phaser.Math.Clamp(this.scene.queen.x+side*(500+Math.random()*160),80,this.scene.config.worldWidth-80);this.combat.spawnEnemy(this.pickKind(def.comp),x);this.remaining--;this.spawnedThisWave++;this.spawnTimer=def.interval;}
       return;
     }
-
-    if(active===0 && this.intermission<=0){
-      this.intermission=2.2;
-      this.scene.showBanner(`WAVE ${this.wave} CLEARED`);
-    }
+    if(active===0){this.intermission=2.2;this.scene.showBanner(`WAVE ${this.wave} CLEARED`);}
   }
 }
