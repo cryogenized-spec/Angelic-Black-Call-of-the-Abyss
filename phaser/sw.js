@@ -1,12 +1,30 @@
-const CACHE_NAME = 'angelic-black-phaser-v2';
+const CACHE_NAME = 'angelic-black-phaser-v3';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.json',
+  './js/boot/EngineLoader.js',
+  './js/boot/PathContract.js',
   './js/config.js',
-  './js/main.js',
+  './js/player/QueenAssetCatalog.js',
+  './js/player/NecroQueen.js',
+  './js/world/FirstTombWorld.js',
+  './js/fx/FXEngine.js',
+  './js/fx/FXEvents.js',
+  './js/combat/EnemyRoster.js',
+  './js/combat/PickupSystem.js',
+  './js/combat/SpellSystem.js',
+  './js/combat/CombatSystem.js',
+  './js/combat/WaveSystem.js',
+  './js/progression/ProgressionSystem.js',
+  './js/debug/RuntimeAudit.js',
+  './js/narrative/NarrativeDirector.js',
+  './js/input/TouchControls.js',
+  './js/ui/Level1Menu.js',
   './js/scenes/BootScene.js',
-  './js/scenes/GameScene.js'
+  './js/scenes/TitleScene.js',
+  './js/scenes/GameScene.js',
+  './js/main.js'
 ];
 
 self.addEventListener('install', event => {
@@ -30,15 +48,12 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') return;
 
   event.respondWith(
-    caches.match(request).then(cached => {
-      if (cached) return cached;
-
-      return fetch(request).then(response => {
-        if (!response || response.status !== 200 || response.type === 'opaque') return response;
+    fetch(request).then(response => {
+      if (response && response.status === 200 && response.type !== 'opaque') {
         const copy = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
-        return response;
-      }).catch(() => caches.match('./index.html'));
-    })
+      }
+      return response;
+    }).catch(() => caches.match(request).then(cached => cached || caches.match('./index.html')))
   );
 });
