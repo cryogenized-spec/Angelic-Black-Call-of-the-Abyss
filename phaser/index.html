@@ -14,6 +14,7 @@
     canvas{image-rendering:pixelated;touch-action:none}
     #rotate{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:#05030a;color:#b18cff;font:600 18px Georgia,serif;letter-spacing:.18em;text-align:center;padding:24px}
     #start-overlay{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(5,3,10,.92);color:#e7d8f2;font:600 16px Georgia,serif;text-align:center;letter-spacing:.08em;padding:24px;cursor:pointer}
+    #engine-status{position:fixed;inset:auto 20px 20px 20px;z-index:40;display:none;background:#180a12;color:#ffb3c1;border:1px solid #8d3148;padding:14px 16px;border-radius:8px;font:14px monospace;line-height:1.45;text-align:center}
     @media (orientation:portrait){#rotate{display:flex}#game-root{display:none}#start-overlay{display:none}}
     @media (pointer:fine){#start-overlay{display:none}}
   </style>
@@ -22,6 +23,7 @@
   <div id="game-root"></div>
   <div id="rotate">ROTATE TO LANDSCAPE</div>
   <div id="start-overlay">TAP TO ENTER THE ABYSS<br><small>Fullscreen + landscape mode will be requested where supported.</small></div>
+  <div id="engine-status"></div>
   <script>
     (function(){
       const gate=document.getElementById('start-overlay');
@@ -33,26 +35,7 @@
       gate.addEventListener('pointerdown',enter,{once:true});
     })();
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/[email protected]/dist/phaser.js"></script>
-  <script src="js/config.js"></script>
-  <script src="js/player/QueenAssetCatalog.js"></script>
-  <script src="js/player/NecroQueen.js"></script>
-  <script src="js/world/FirstTombWorld.js"></script>
-  <script src="js/fx/FXEngine.js"></script>
-  <script src="js/fx/FXEvents.js"></script>
-  <script src="js/combat/EnemyRoster.js"></script>
-  <script src="js/combat/PickupSystem.js"></script>
-  <script src="js/combat/SpellSystem.js"></script>
-  <script src="js/combat/CombatSystem.js"></script>
-  <script src="js/combat/WaveSystem.js"></script>
-  <script src="js/progression/ProgressionSystem.js"></script>
-  <script src="js/debug/RuntimeAudit.js"></script>
-  <script src="js/narrative/NarrativeDirector.js"></script>
-  <script src="js/input/TouchControls.js"></script>
-  <script src="js/ui/Level1Menu.js"></script>
-  <script src="js/scenes/BootScene.js"></script>
-  <script src="js/scenes/GameScene.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/boot/EngineLoader.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
