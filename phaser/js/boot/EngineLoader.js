@@ -1,7 +1,7 @@
 /* Angelic Black — resilient Phaser CDN loader. */
 (function(){
   'use strict';
-  const BUILD='20260823-m24';
+  const BUILD='20260823-m25';
   const SOURCES=['https://cdn.jsdelivr.net/npm/phaser@4.2.1/dist/phaser.min.js','https://cdnjs.cloudflare.com/ajax/libs/phaser/4.2.1/phaser.min.js'];
   const scriptSources=['./js/config.js','./js/player/QueenAssetCatalog.js','./js/player/NecroQueen.js','./js/world/FirstTombWorld.js','./js/fx/FXEngine.js','./js/fx/FXEvents.js','./js/combat/EnemyRoster.js','./js/combat/PickupSystem.js','./js/combat/SpellSystem.js','./js/combat/CombatSystem.js','./js/combat/WaveSystem.js','./js/progression/ProgressionSystem.js','./js/debug/RuntimeAudit.js','./js/narrative/NarrativeDirector.js','./js/input/TouchControls.js','./js/ui/Level1Menu.js','./js/scenes/BootScene.js','./js/scenes/TitleScene.js','./js/scenes/GameScene.js','./js/narrative/PreludeRetainers.js','./js/main.js'];
   const status=document.getElementById('engine-status');
