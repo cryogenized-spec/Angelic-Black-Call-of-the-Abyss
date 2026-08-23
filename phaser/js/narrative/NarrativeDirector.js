@@ -10,8 +10,8 @@ class NarrativeDirector{
     this.name=scene.add.text(88,height-144,'',{fontFamily:'Georgia,serif',fontStyle:'bold',fontSize:'19px',color:'#d8a94e',stroke:'#05030a',strokeThickness:6}).setScrollFactor(0).setDepth(703).setVisible(false);
     this.text=scene.add.text(88,height-112,'',{fontFamily:'Georgia,serif',fontSize:'18px',color:'#eee6f4',wordWrap:{width:815,useAdvancedWrap:true},lineSpacing:7}).setScrollFactor(0).setDepth(703).setVisible(false);
     this.interlude=scene.add.text(width/2,height/2,'',{fontFamily:'Georgia,serif',fontStyle:'italic',fontSize:'24px',color:'#e7d8f2',align:'center',wordWrap:{width:760},lineSpacing:12}).setOrigin(.5).setScrollFactor(0).setDepth(704).setVisible(false);
-    this.comicTop=scene.add.text(width/2,28,'',{fontFamily:'Georgia,serif',fontStyle:'italic',fontSize:'17px',color:'#eee6f4',align:'center',wordWrap:{width:860},stroke:'#05030a',strokeThickness:5}).setOrigin(.5,0).setScrollFactor(0).setDepth(704).setVisible(false);
-    this.comicBottom=scene.add.text(width/2,height-30,'',{fontFamily:'Georgia,serif',fontStyle:'italic',fontSize:'17px',color:'#eee6f4',align:'center',wordWrap:{width:860},stroke:'#05030a',strokeThickness:5}).setOrigin(.5,1).setScrollFactor(0).setDepth(704).setVisible(false);
+    this.comicTop=scene.add.text(width/2,28,'',{fontFamily:'EB Garamond',fontStyle:'italic',fontSize:'26px',color:'#f2ead8',align:'center',wordWrap:{width:850,useAdvancedWrap:true},stroke:'#05030a',strokeThickness:5}).setOrigin(.5,0).setScrollFactor(0).setDepth(704).setVisible(false);
+    this.comicBottom=scene.add.text(width/2,height-30,'',{fontFamily:'EB Garamond',fontStyle:'italic',fontSize:'26px',color:'#f2ead8',align:'center',wordWrap:{width:850,useAdvancedWrap:true},stroke:'#05030a',strokeThickness:5}).setOrigin(.5,1).setScrollFactor(0).setDepth(704).setVisible(false);
     scene.input.on('pointerdown',()=>this.advance());scene.input.keyboard.on('keydown-ENTER',()=>this.advance());
   }
   ensureFallback(){if(this.scene.textures.exists('narrative-fallback'))return;const g=this.scene.add.graphics(),{width,height}=this.scene.config;g.fillGradientStyle(0x120b1f,0x120b1f,0x05030a,0x05030a,1);g.fillRect(0,0,width,height);g.fillStyle(0x2b2140,.8);g.fillCircle(width*.72,height*.38,120);g.lineStyle(2,0x6d5a8f,.5);g.strokeCircle(width*.72,height*.38,120);g.generateTexture('narrative-fallback',width,height);g.destroy();}
@@ -41,8 +41,8 @@ class NarrativeDirector{
   update(delta){if(!this.active)return;this.timer+=Math.min(delta,50)/1000;const s=this.steps[this.index];if(!s)return;if((s.type==='wait'||s.type==='fade')&&this.timer>=s.duration){this.index++;this.applyStep();}}
   opening(done){this.open([
     {type:'interlude',text:'Beneath the ruined kingdom, centuries passed in silence.'},
-    {type:'comic',key:'comic-01',top:'Before the kingdoms learned to fear the dead, there was a Queen whose name was struck from every record.',bottom:'Her own court betrayed her. The corrupted paladins sealed her beneath the First Tomb.'},
-    {type:'comic',key:'comic-02',top:'Centuries passed. Roots and rust ate the seals.',bottom:'Darkness gathered where honour was broken — and the prison grew thin.'},
+    {type:'comic',key:'comic-01',top:'Before the kingdoms learned to fear the dead, there was a Queen whose name was struck from every record.',bottom:'Her own court betrayed her. The paladins of the corrupted order sealed her beneath the First Tomb.'},
+    {type:'comic',key:'comic-02',top:'Centuries passed. Roots and rust ate the seals.',bottom:'Darkness gathered where honour was broken — and the seal grew thin.'},
     {type:'comic',key:'comic-03',top:'On the night the moon turned away, the seal broke.',bottom:'She rose. And the dead remembered their Queen.'},
     {type:'interlude',text:'THE FIRST TOMB\n\nThe dead are waiting.'},
     {type:'fade',alpha:1,duration:.8}
