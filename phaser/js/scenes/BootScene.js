@@ -15,7 +15,7 @@ class BootScene extends Phaser.Scene {
       align: 'center'
     }).setOrigin(0.5);
 
-    this.add.text(cfg.width/2, cfg.height/2 + 10, 'PHASER 4 MIGRATION FOUNDATION', {
+    this.add.text(cfg.width/2, cfg.height/2 + 10, 'PHASER 4 • NECRO QUEEN PLAYER FOUNDATION', {
       fontFamily: 'monospace',
       fontSize: '15px',
       color: '#b18cff',
@@ -23,13 +23,13 @@ class BootScene extends Phaser.Scene {
       align: 'center'
     }).setOrigin(0.5);
 
-    this.add.text(cfg.width/2, cfg.height/2 + 48, '960 × 540 · LANDSCAPE · PIXEL ART', {
+    this.add.text(cfg.width/2, cfg.height/2 + 48, '960 × 540 · LANDSCAPE · PIXEL ART · ARCADE PHYSICS', {
       fontFamily: 'monospace',
       fontSize: '11px',
       color: '#8f9ab0',
       align: 'center'
     }).setOrigin(0.5);
 
-    this.time.delayedCall(650, () => this.scene.start('MigrationProbeScene'));
+    this.time.delayedCall(650, () => this.scene.start('GameScene'));
   }
 }
