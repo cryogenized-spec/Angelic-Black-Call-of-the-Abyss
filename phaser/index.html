@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0b0611">
+  <title>Angelic Black — Phaser 4 Migration</title>
+  <style>
+    :root{color-scheme:dark;background:#05030a}
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05030a}
+    body{display:flex;align-items:center;justify-content:center}
+    #game-root{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center}
+    canvas{image-rendering:pixelated;touch-action:none}
+    #rotate{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:#05030a;color:#b18cff;font:600 18px Georgia,serif;letter-spacing:.18em;text-align:center;padding:24px}
+    @media (orientation:portrait){#rotate{display:flex}#game-root{display:none}}
+  </style>
+</head>
+<body>
+  <div id="game-root"></div>
+  <div id="rotate">ROTATE TO LANDSCAPE</div>
+
+  <!-- Temporary migration dependency. We will vendor/bundle Phaser after parity is proven. -->
+  <script src="https://cdn.jsdelivr.net/npm/[email protected]/dist/phaser.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/scenes/BootScene.js"></script>
+  <script src="js/scenes/MigrationProbeScene.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
