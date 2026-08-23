@@ -27,10 +27,10 @@
   <script>
     (function(){
       const gate=document.getElementById('start-overlay');
-      async function enter(){
-        try{if(document.documentElement.requestFullscreen&&!document.fullscreenElement)await document.documentElement.requestFullscreen();}catch(e){}
-        try{if(screen.orientation&&screen.orientation.lock)await screen.orientation.lock('landscape');}catch(e){}
+      function enter(){
         gate.style.display='none';
+        try{if(document.documentElement.requestFullscreen&&!document.fullscreenElement){const p=document.documentElement.requestFullscreen();if(p&&p.catch)p.catch(()=>{});}}catch(e){}
+        try{if(screen.orientation&&screen.orientation.lock){const p=screen.orientation.lock('landscape');if(p&&p.catch)p.catch(()=>{});}}catch(e){}
       }
       gate.addEventListener('pointerdown',enter,{once:true});
     })();
