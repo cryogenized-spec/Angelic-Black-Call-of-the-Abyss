@@ -1,41 +1,48 @@
-/* Phaser M9 — visual FX integration scene. */
+/* Phaser M10 — narrative-integrated game scene. */
 class GameScene extends Phaser.Scene {
   constructor(){super('GameScene');}
   preload(){
     ANGELIC_QUEEN_ASSETS.queue(this);
-    this.load.on('loaderror',file=>{if(file&&file.key&&file.key.indexOf('queen-')===0){this.queenAssetErrors=this.queenAssetErrors||[];this.queenAssetErrors.push(file.key);}});
+    this.load.image('necro-queen-level-up','assets/art/portraits/level-up/necro-queen-level-up.png');
+    this.load.on('loaderror',file=>{if(file&&file.key&&(file.key.indexOf('queen-')===0||file.key==='necro-queen-level-up')){this.queenAssetErrors=this.queenAssetErrors||[];this.queenAssetErrors.push(file.key);}});
   }
   create(){
     const cfg=window.ANGELIC_PHASER_CONFIG;this.config=cfg;this.queenAssetErrors=this.queenAssetErrors||[];
     this.cursors=this.input.keyboard.createCursorKeys();this.jumpQueued=false;
     this.fireKey=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);this.chargeKey=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);this.lanceKey=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);this.mantleKey=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V);this.gravefallKey=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B);
     this.levelOneKey=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE);this.levelTwoKey=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);this.resetKey=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+    this.openingKey=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.O);this.preludeKey=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);this.aftermathKey=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.cameras.main.setBackgroundColor('#0b0611');this.cameras.main.setBounds(0,0,cfg.worldWidth,cfg.height);this.world=new FirstTombWorld(this);
     this.createQueenFallbackTexture();this.createEnemyFallbackTextures();ANGELIC_QUEEN_ASSETS.defineAnimations(this);
     const initialTexture=this.textures.exists('queen-idle')?'queen-idle':'queen-fallback';
     this.queen=new NecroQueen(this,240,cfg.ground,initialTexture);this.physics.add.collider(this.queen,this.world.groundBody);this.queen.setAnimationState();
-    this.fx=new ANGELIC_FX(this);this.progression=new ProgressionSystem(this,this.queen);this.combat=new CombatSystem(this,this.queen);this.pickups=new PickupSystem(this,this.combat);this.spells=new SpellSystem(this,this.queen,this.combat);this.waves=new WaveSystem(this,this.combat);this.audit=new RuntimeAudit(this);
+    this.fx=new ANGELIC_FX(this);this.progression=new ProgressionSystem(this,this.queen);this.combat=new CombatSystem(this,this.queen);this.pickups=new PickupSystem(this,this.combat);this.spells=new SpellSystem(this,this.queen,this.combat);this.waves=new WaveSystem(this,this.combat);this.audit=new RuntimeAudit(this);this.narrative=new NarrativeDirector(this);
     this.banner=this.add.text(cfg.width/2,72,'',{fontFamily:'Georgia,serif',fontSize:'24px',color:'#e7d8f2',stroke:'#0b0611',strokeThickness:7}).setOrigin(0.5).setScrollFactor(0).setAlpha(0).setDepth(200);this.bannerT=0;
-    this.bossTitle=this.add.text(cfg.width/2,170,'',{fontFamily:'Georgia,serif',fontStyle:'bold',fontSize:'34px',color:'#d8a94e',stroke:'#0b0611',strokeThickness:10}).setOrigin(0.5).setScrollFactor(0).setAlpha(0).setDepth(210);this.bossTitleSub=this.add.text(cfg.width/2,212,'',{fontFamily:'Georgia,serif',fontSize:'14px',color:'#e7d8f2',stroke:'#0b0611',strokeThickness:5}).setOrigin(0.5).setScrollFactor(0).setAlpha(0).setDepth(210);
+    this.bossTitle=this.add.text(cfg.width/2,170,'',{fontFamily:'Georgia,serif',fontStyle:'bold',fontSize:'34px',color:'#d8a94e',stroke:'#0b0611',strokeThickness:10}).setOrigin(0.5).setScrollFactor(0).setAlpha(0).setDepth(210);this.bossTitleSub=this.add.text(cfg.width/2,212,'',{fontFamily:'Georgia,serif',fontSize:'14px',color:'#e7d8f2',stroke:'#0b0611',strokeThickness:5}).setOrigin(0.5).setScrollFactor(0).setDepth(210);
     this.completeShade=this.add.rectangle(cfg.width/2,cfg.height/2,cfg.width,cfg.height,0x05030a,0.82).setScrollFactor(0).setDepth(520).setVisible(false);
     this.completePanel=this.add.rectangle(cfg.width/2,cfg.height/2,720,300,0x100a18,0.97).setStrokeStyle(2,0xd8a94e,0.8).setScrollFactor(0).setDepth(521).setVisible(false);
     this.completeTitle=this.add.text(cfg.width/2,192,'FIRST TOMB CLEARED',{fontFamily:'Georgia,serif',fontSize:'28px',color:'#d8a94e',stroke:'#05030a',strokeThickness:7}).setOrigin(0.5).setScrollFactor(0).setDepth(522).setVisible(false);
     this.completeBody=this.add.text(cfg.width/2,245,'The Skeletal Lord is broken.\nThe dead have answered their Queen.\n\nPress R to restart the run.',{fontFamily:'monospace',fontSize:'14px',align:'center',color:'#e7d8f2',lineSpacing:10}).setOrigin(0.5).setScrollFactor(0).setDepth(522).setVisible(false);
-    this.add.text(28,22,'PHASER M9 • VISUAL FX',{fontFamily:'monospace',fontSize:'13px',color:'#d8a94e',stroke:'#000000',strokeThickness:4}).setScrollFactor(0).setDepth(200);
+    this.add.text(28,22,'PHASER M10 • NARRATIVE',{fontFamily:'monospace',fontSize:'13px',color:'#d8a94e',stroke:'#000000',strokeThickness:4}).setScrollFactor(0).setDepth(200);
     this.status=this.add.text(28,46,'',{fontFamily:'monospace',fontSize:'10px',color:'#8f9ab0',stroke:'#000000',strokeThickness:3,lineSpacing:4}).setScrollFactor(0).setDepth(200);
     this.add.text(cfg.width-28,22,'← → MOVE   SPACE / ↑ JUMP',{fontFamily:'monospace',fontSize:'10px',color:'#b18cff',stroke:'#000000',strokeThickness:3}).setOrigin(1,0).setScrollFactor(0).setDepth(200);
     this.add.text(cfg.width-28,45,'Z BOLT  X CHARGE  C LANCE  V MANTLE  B GRAVEFALL',{fontFamily:'monospace',fontSize:'9px',color:'#7dffc0',stroke:'#000000',strokeThickness:3}).setOrigin(1,0).setScrollFactor(0).setDepth(200);
-    this.input.keyboard.on('keydown-ONE',()=>{if(this.progression.state==='playing')this.queen.playAction('idle');});this.onQueenDefeated=()=>this.progression.onQueenDefeated();this.onLevelOneComplete=()=>this.showLevelOneComplete();
+    this.add.text(cfg.width-28,60,'O OPENING  P PRELUDE  A AFTERMATH',{fontFamily:'monospace',fontSize:'8px',color:'#6d5a8f',stroke:'#000000',strokeThickness:3}).setOrigin(1,0).setScrollFactor(0).setDepth(200);
+    this.onQueenDefeated=()=>this.progression.onQueenDefeated();
+    this.onLevelOneComplete=()=>this.narrative.graveLordDefeat(()=>this.narrative.aftermath(()=>this.showLevelOneComplete()));
     this.waves.startNext();this.cameras.main.startFollow(this.queen,true,0.08,0.08);this.cameras.main.setLerp(0.08,0.08);this.cameras.main.setDeadzone(240,120);
+    this.time.delayedCall(250,()=>this.narrative.levelOnePrelude(()=>this.showBanner('WAVE 1')));
   }
   clearEnemiesForRespawn(){this.combat.enemies.clear(true,true);this.combat.projectiles.clear(true,true);this.combat.enemyProjectiles.clear(true,true);this.pickups.group.clear(true,true);this.combat.waveKills=0;}
   resetRun(){this.scene.restart();}
   showBanner(text){this.banner.setText(text).setAlpha(1);this.bannerT=1.8;}
-  showBossTitle(title){this.bossTitle.setText(title).setAlpha(0).setScale(0.82);this.bossTitleSub.setText('THE FIRST GRAVE ANSWERS').setAlpha(0);this.fx.bossEntrance(this.queen.x+this.queen.face*220,this.config.ground-40);this.tweens.add({targets:this.bossTitle,alpha:1,scale:1,duration:520,ease:'Back.Out'});this.tweens.add({targets:this.bossTitleSub,alpha:1,duration:460,delay:180});this.time.delayedCall(2200,()=>this.tweens.add({targets:[this.bossTitle,this.bossTitleSub],alpha:0,duration:420}));}
+  showBossTitle(title){this.bossTitle.setText(title).setAlpha(0).setScale(0.82);this.bossTitleSub.setText('THE FIRST GRAVE ANSWERS').setAlpha(0);this.fx.bossEntrance(this.queen.x+this.queen.face*220,this.config.ground-40);this.narrative.graveLordConfrontation(()=>{});this.tweens.add({targets:this.bossTitle,alpha:1,scale:1,duration:520,ease:'Back.Out'});this.tweens.add({targets:this.bossTitleSub,alpha:1,duration:460,delay:180});this.time.delayedCall(2200,()=>this.tweens.add({targets:[this.bossTitle,this.bossTitleSub],alpha:0,duration:420}));}
   showLevelOneComplete(){this.progression.state='level-complete';this.progression.syncPhysicsPause();this.completeShade.setVisible(true);this.completePanel.setVisible(true);this.completeTitle.setVisible(true);this.completeBody.setVisible(true);this.fx.sigil(this.queen.x,this.queen.y-45,72,0xd8a94e,1.0);this.fx.cameraPunch(0.008,220);}
-  update(time,delta){const cfg=this.config,dt=Math.min(delta,50)/1000;this.audit.update(time);
+  update(time,delta){const cfg=this.config,dt=Math.min(delta,50)/1000;this.audit.update(time);this.narrative.update(delta);
     if(this.progression.state==='level-complete'){if(Phaser.Input.Keyboard.JustDown(this.resetKey))this.resetRun();return;}
+    if(this.narrative.active)return;
     this.progression.update();if(this.progression.state!=='playing')return;
+    if(Phaser.Input.Keyboard.JustDown(this.openingKey))return this.narrative.opening(()=>{});if(Phaser.Input.Keyboard.JustDown(this.preludeKey))return this.narrative.levelOnePrelude(()=>{});if(Phaser.Input.Keyboard.JustDown(this.aftermathKey))return this.narrative.aftermath(()=>{});
     if(Phaser.Input.Keyboard.JustDown(this.fireKey))this.combat.beginBasicCast();if(Phaser.Input.Keyboard.JustDown(this.chargeKey))this.combat.startCharge();if(Phaser.Input.Keyboard.JustUp(this.chargeKey))this.combat.releaseCharge();if(Phaser.Input.Keyboard.JustDown(this.lanceKey))this.spells.castLance();if(Phaser.Input.Keyboard.JustDown(this.mantleKey))this.spells.activateMantle();if(Phaser.Input.Keyboard.JustDown(this.gravefallKey))this.spells.castGravefall();
     this.queen.updateControl(this.cursors,this.jumpQueued,dt);this.jumpQueued=false;this.queen.setAnimationState();this.combat.update(delta);this.spells.update(delta);this.waves.update(delta);this.world.update(time,delta);this.fx.update(delta);
     const lookAhead=this.queen.face*120,targetX=Phaser.Math.Clamp(this.queen.x+lookAhead,cfg.width/2,cfg.worldWidth-cfg.width/2),camX=this.cameras.main.midPoint.x;this.cameras.main.scrollX+=(targetX-camX)*0.08;
