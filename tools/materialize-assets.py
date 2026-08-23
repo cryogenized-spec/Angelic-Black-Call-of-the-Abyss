@@ -36,6 +36,8 @@ def vendor_font(package: str, css_path: str) -> None:
 
 
 def patch_file(path: Path, replacements: dict[str, str]) -> None:
+    if not path.is_file():
+        return
     text = path.read_text(encoding='utf-8')
     original = text
     for old, new in replacements.items():
@@ -79,11 +81,7 @@ def materialize_images(items: list[dict]) -> dict[str, str]:
 
 
 def find_external_runtime_urls(root: Path) -> list[str]:
-    """Check only the shipped Phaser runtime for external image/font asset URLs.
-
-    The legacy src/ tree is intentionally preserved as reference/rollback code and
-    may retain historical runtime URLs. It must not block the current production build.
-    """
+    """Check only the shipped Phaser runtime for external image/font asset URLs."""
     matches: list[str] = []
     if not root.exists():
         return matches
@@ -108,17 +106,22 @@ def main() -> None:
     for item in manifest.get('fonts', []):
         vendor_font(item['package'], item['css'])
 
-    # Legacy engine: kept for rollback/reference. Materialization may still patch
-    # its image/font URLs, but historical external URLs must not fail the build.
-    patch_file(ROOT / 'src/js/modules/01-setup.js', image_replacements)
-    patch_file(ROOT / 'src/game.html', image_replacements)
-    patch_file(ROOT / 'src/game.html', {
-        'https://cdn.jsdelivr.net/fontsource/css/press-start-2p@latest/index.css': '../assets/fonts/press-start-2p/400.css',
-        'https://cdn.jsdelivr.net/fontsource/css/grenze-gotisch@latest/index.css': '../assets/fonts/grenze-gotisch/400.css',
-        'https://cdn.jsdelivr.net/fontsource/css/eb-garamond@latest/index.css': '../assets/fonts/eb-garamond/400.css',
-        'https://cdn.jsdelivr.net/fontsource/css/unifrakturmaguntia@latest/index.css': '../assets/fonts/unifrakturmaguntia/400.css',
-        'https://cdn.jsdelivr.net/fontsource/css/noto-serif-jp@latest/index.css': '../assets/fonts/noto-serif-jp/400.css',
-    })
+    # The old monolithic runtime has been removed from the production repository.
+    # Keep these guarded hooks so the materializer remains harmless on archived or
+    # rollback branches where the legacy paths may still exist.
+    legacy_setup = ROOT / 'src/js/modules/01-setup.js'
+    legacy_game = ROOT / 'src/game.html'
+    if legacy_setup.is_file():
+        patch_file(legacy_setup, image_replacements)
+    if legacy_game.is_file():
+        patch_file(legacy_game, image_replacements)
+        patch_file(legacy_game, {
+            'https://cdn.jsdelivr.net/fontsource/css/press-start-2p@latest/index.css': '../assets/fonts/press-start-2p/400.css',
+            'https://cdn.jsdelivr.net/fontsource/css/grenze-gotisch@latest/index.css': '../assets/fonts/grenze-gotisch/400.css',
+            'https://cdn.jsdelivr.net/fontsource/css/eb-garamond@latest/index.css': '../assets/fonts/eb-garamond/400.css',
+            'https://cdn.jsdelivr.net/fontsource/css/unifrakturmaguntia@latest/index.css': '../assets/fonts/unifrakturmaguntia/400.css',
+            'https://cdn.jsdelivr.net/fontsource/css/noto-serif-jp@latest/index.css': '../assets/fonts/noto-serif-jp/400.css',
+        })
 
     remaining = find_external_runtime_urls(ROOT / 'phaser')
     if remaining:
