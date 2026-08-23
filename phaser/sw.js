@@ -1,4 +1,4 @@
-const CACHE_NAME = 'angelic-black-phaser-v3';
+const CACHE_NAME = 'angelic-black-phaser-v4';
 const APP_SHELL = [
   './',
   './index.html',
