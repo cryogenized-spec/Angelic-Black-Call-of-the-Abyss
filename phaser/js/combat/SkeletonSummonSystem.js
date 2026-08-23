@@ -25,8 +25,7 @@
     replenishMissing(){return this.replenish(false);}
     update(delta){this.units=this.units.filter(u=>u&&u.active&&!u.isDead);for(const u of this.units)u.update(delta);}
   }
-  window.SkeletonSummonSystem=SkeletonSummonSystem;
-  window.SKELETON_RETAINER_MAX=MAX;
+  window.SkeletonSummonSystem=SkeletonSummonSystem;window.SKELETON_RETAINER_MAX=MAX;
   if(window.NarrativeDirector){
     NarrativeDirector.prototype.showRetainers=function(){if(!this.scene.summons)this.scene.summons=new SkeletonSummonSystem(this.scene,this.scene.queen);this.scene.summons.ensureStartingRetainers();};
     NarrativeDirector.prototype.hideRetainers=function(){};
