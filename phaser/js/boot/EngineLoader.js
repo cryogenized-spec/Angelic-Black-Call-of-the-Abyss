@@ -34,12 +34,13 @@
 
   async function boot(){
     let loaded=false;
-    let lastError='';
     for(const src of SOURCES){
       try{
         await loadScript(src);
         if(window.Phaser){loaded=true;break;}
-      }catch(err){lastError=err.message;}
+      }catch(err){
+        console.warn(err);
+      }
     }
     if(!loaded){showError('ENGINE LOAD FAILED','Phaser 4.2.1 could not be loaded. Check your connection and reload.');return;}
     try{
@@ -54,11 +55,11 @@
 
   window.addEventListener('error', event=>{
     if(event.error) console.error(event.error);
-    if(event.message && !window.ANGELIC_PHASER_GAME) showError('STARTUP ERROR',event.message);
+    if(event.message && !window.ANGELIC_BOOT_READY) showError('STARTUP ERROR',event.message);
   });
   window.addEventListener('unhandledrejection', event=>{
     console.error(event.reason);
-    if(!window.ANGELIC_PHASER_GAME) showError('STARTUP ERROR',String(event.reason?.message||event.reason));
+    if(!window.ANGELIC_BOOT_READY) showError('STARTUP ERROR',String(event.reason?.message||event.reason));
   });
   boot();
 })();
