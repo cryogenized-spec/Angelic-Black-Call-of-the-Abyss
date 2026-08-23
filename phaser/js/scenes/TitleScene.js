@@ -1,7 +1,11 @@
 /* Angelic Black — mobile-first title / cover scene. */
 class TitleScene extends Phaser.Scene {
   constructor(){ super('TitleScene'); }
-  preload(){ this.load.image('cover-main','../assets/art/cover/cover-main.png'); this.load.on('loaderror',file=>{this.failed=this.failed||new Set();if(file?.key)this.failed.add(file.key);}); }
+  preload(){
+    const images=[['cover-main','../assets/art/cover/cover-main.png'],['comic-01','../assets/art/comic/comic-01-tomb-sealed.png'],['comic-02','../assets/art/comic/comic-02-seal-decays.png'],['comic-03','../assets/art/comic/comic-03-queen-awakens.png'],['first-tomb','../assets/art/scenes/first-tomb.png'],['aftermath','../assets/art/scenes/aftermath.png']];
+    for(const [key,path] of images)this.load.image(key,path);
+    this.load.on('loaderror',file=>{this.failed=this.failed||new Set();if(file?.key)this.failed.add(file.key);});
+  }
   create(){
     const cfg=window.ANGELIC_PHASER_CONFIG;this.cameras.main.setBackgroundColor('#05030a');this.createFallback();
     const coverKey=this.textures.exists('cover-main')&&!this.failed?.has('cover-main')?'cover-main':'title-fallback';
@@ -13,9 +17,7 @@ class TitleScene extends Phaser.Scene {
     this.hint=this.add.text(cfg.width/2,cfg.height-42,'THE ABYSS REMEMBERS ITS QUEEN',{fontFamily:'monospace',fontSize:'9px',color:'#b18cff',stroke:'#05030a',strokeThickness:3}).setOrigin(.5).setDepth(3);
     this.input.once('pointerdown',()=>this.begin());this.input.keyboard.once('keydown-ENTER',()=>this.begin());this.input.keyboard.once('keydown-SPACE',()=>this.begin());
   }
-  begin(){if(this.started)return;this.started=true;this.tweens.add({targets:[this.cover,this.shade,this.title,this.subtitle,this.enter,this.hint],alpha:0,duration:420,onComplete:()=>this.scene.start('GameScene',{startOpening:true})});}
-  createFallback(){
-    if(this.textures.exists('title-fallback'))return;const cfg=window.ANGELIC_PHASER_CONFIG,g=this.add.graphics();g.fillGradientStyle(0x160d25,0x0a0610,0x05030a,0x020106,1);g.fillRect(0,0,cfg.width,cfg.height);g.fillStyle(0x241438,.85);g.fillCircle(cfg.width*.72,cfg.height*.36,175);g.fillStyle(0xd8a94e,.3);g.fillCircle(cfg.width*.72,cfg.height*.36,4);g.lineStyle(3,0x6d5a8f,.45);g.strokeCircle(cfg.width*.72,cfg.height*.36,175);g.lineStyle(1,0xb18cff,.22);for(let i=0;i<8;i++)g.strokeCircle(cfg.width*.72,cfg.height*.36,42+i*18);g.fillStyle(0x05030a,.78);g.fillRect(0,cfg.height*.72,cfg.width,cfg.height*.28);g.generateTexture('title-fallback',cfg.width,cfg.height);g.destroy();
-  }
+  begin(){if(this.started)return;this.started=true;window.ANGELIC_START_OPENING=true;this.tweens.add({targets:[this.cover,this.shade,this.title,this.subtitle,this.enter,this.hint],alpha:0,duration:420,onComplete:()=>this.scene.start('GameScene',{startOpening:true})});}
+  createFallback(){if(this.textures.exists('title-fallback'))return;const cfg=window.ANGELIC_PHASER_CONFIG,g=this.add.graphics();g.fillGradientStyle(0x160d25,0x0a0610,0x05030a,0x020106,1);g.fillRect(0,0,cfg.width,cfg.height);g.fillStyle(0x241438,.85);g.fillCircle(cfg.width*.72,cfg.height*.36,175);g.fillStyle(0xd8a94e,.3);g.fillCircle(cfg.width*.72,cfg.height*.36,4);g.lineStyle(3,0x6d5a8f,.45);g.strokeCircle(cfg.width*.72,cfg.height*.36,175);g.lineStyle(1,0xb18cff,.22);for(let i=0;i<8;i++)g.strokeCircle(cfg.width*.72,cfg.height*.36,42+i*18);g.fillStyle(0x05030a,.78);g.fillRect(0,cfg.height*.72,cfg.width,cfg.height*.28);g.generateTexture('title-fallback',cfg.width,cfg.height);g.destroy();}
 }
 window.TitleScene=TitleScene;
