@@ -1,12 +1,32 @@
 /* Angelic Black — Phaser 4 loader. */
 (function(){
   'use strict';
-  const BUILD='20260823-m33';
+  const BUILD='20260823-m34';
   const SOURCES=['https://cdn.jsdelivr.net/npm/phaser@4.2.1/dist/phaser.min.js','https://cdnjs.cloudflare.com/ajax/libs/phaser/4.2.1/phaser.min.js'];
   const scriptSources=['./js/config.js','./js/player/QueenAssetCatalog.js','./js/player/NecroQueen.js','./js/world/FirstTombWorld.js','./js/fx/FXEngine.js','./js/fx/FXEvents.js','./js/combat/EnemyRoster.js','./js/combat/PickupSystem.js','./js/combat/SpellSystem.js','./js/combat/CombatSystem.js','./js/narrative/NarrativeDirector.js','./js/narrative/PreludeRetainers.js','./js/combat/SkeletonSummonSystem.js','./js/combat/WaveSystem.js','./js/progression/ProgressionSystem.js','./js/debug/RuntimeAudit.js','./js/input/TouchControls.js','./js/ui/Level1Menu.js','./js/scenes/BootScene.js','./js/scenes/TitleScene.js','./js/scenes/GameScene.js'];
   const status=document.getElementById('engine-status');
   function showError(title,detail){if(!status)return;status.innerHTML=`<strong>${title}</strong><br><small>${detail}</small>`;status.style.display='block';}
-  function loadScript(src){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src+(src.includes('?')?'&':'?')+'v='+BUILD;s.async=false;document.body.appendChild(s);s.onload=resolve;s.onerror=()=>reject(new Error('Failed to load '+src));});}
+  function loadScript(src){
+    return new Promise((resolve,reject)=>{
+      const s=document.createElement('script');
+      const url=src+(src.includes('?')?'&':'?')+'v='+BUILD;
+      s.src=url;
+      s.async=false;
+      let settled=false;
+      const cleanup=()=>window.removeEventListener('error',onError,true);
+      const fail=err=>{if(settled)return;settled=true;cleanup();reject(err);};
+      const onError=event=>{
+        const filename=event.filename||'';
+        if(filename===url||filename.endsWith(src)){
+          fail(new Error(`${event.message||'JavaScript error'} (${src}${event.lineno?`:${event.lineno}:${event.colno||0}`:''})`));
+        }
+      };
+      window.addEventListener('error',onError,true);
+      s.onload=()=>{if(settled)return;settled=true;cleanup();resolve();};
+      s.onerror=()=>fail(new Error('Failed to load '+src));
+      document.body.appendChild(s);
+    });
+  }
   async function boot(){
     let loaded=false;
     for(const src of SOURCES){try{await loadScript(src);if(window.Phaser){loaded=true;break;}}catch(err){console.warn(err);}}
