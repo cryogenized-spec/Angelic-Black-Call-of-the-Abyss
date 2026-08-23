@@ -78,6 +78,29 @@ def materialize_images(items: list[dict]) -> dict[str, str]:
     return replacements
 
 
+def find_external_runtime_urls(root: Path) -> list[str]:
+    """Check only the shipped Phaser runtime for external image/font asset URLs.
+
+    The legacy src/ tree is intentionally preserved as reference/rollback code and
+    may retain historical runtime URLs. It must not block the current production build.
+    """
+    matches: list[str] = []
+    if not root.exists():
+        return matches
+
+    needles = (
+        'image.qwenlm.ai',
+        'cdn.jsdelivr.net/fontsource/css',
+        'fonts.googleapis.com',
+        'fonts.gstatic.com',
+    )
+    for file in [p for p in root.rglob('*') if p.is_file() and p.suffix.lower() in {'.html', '.js', '.css'}]:
+        text = file.read_text(encoding='utf-8', errors='ignore')
+        if any(needle in text for needle in needles):
+            matches.append(str(file.relative_to(ROOT)))
+    return matches
+
+
 def main() -> None:
     manifest = json.loads(MANIFEST.read_text(encoding='utf-8'))
     image_replacements = materialize_images(manifest.get('images', []))
@@ -85,6 +108,8 @@ def main() -> None:
     for item in manifest.get('fonts', []):
         vendor_font(item['package'], item['css'])
 
+    # Legacy engine: kept for rollback/reference. Materialization may still patch
+    # its image/font URLs, but historical external URLs must not fail the build.
     patch_file(ROOT / 'src/js/modules/01-setup.js', image_replacements)
     patch_file(ROOT / 'src/game.html', image_replacements)
     patch_file(ROOT / 'src/game.html', {
@@ -95,13 +120,9 @@ def main() -> None:
         'https://cdn.jsdelivr.net/fontsource/css/noto-serif-jp@latest/index.css': '../assets/fonts/noto-serif-jp/400.css',
     })
 
-    remaining = []
-    for file in [ROOT / 'src/game.html', *ROOT.glob('src/js/**/*.js')]:
-        text = file.read_text(encoding='utf-8')
-        if 'image.qwenlm.ai' in text or 'cdn.jsdelivr.net/fontsource/css' in text or 'fonts.googleapis.com' in text or 'fonts.gstatic.com' in text:
-            remaining.append(str(file.relative_to(ROOT)))
+    remaining = find_external_runtime_urls(ROOT / 'phaser')
     if remaining:
-        raise SystemExit('External runtime asset URLs remain in: ' + ', '.join(remaining))
+        raise SystemExit('External runtime asset URLs remain in shipped Phaser app: ' + ', '.join(remaining))
 
 
 if __name__ == '__main__':
