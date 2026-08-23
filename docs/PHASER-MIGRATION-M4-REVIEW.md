@@ -1,0 +1,1 @@
+M4 review note: world and camera integration verified as four-file scoped change. Legacy runtime remains outside the PR.
