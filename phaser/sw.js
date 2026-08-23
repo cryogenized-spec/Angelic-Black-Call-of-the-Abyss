@@ -1,4 +1,4 @@
-const CACHE_NAME = 'angelic-black-phaser-v4';
+const CACHE_NAME = 'angelic-black-phaser-v5';
 const APP_SHELL = [
   './',
   './index.html',
@@ -15,10 +15,12 @@ const APP_SHELL = [
   './js/combat/PickupSystem.js',
   './js/combat/SpellSystem.js',
   './js/combat/CombatSystem.js',
+  './js/combat/SkeletonSummonSystem.js',
   './js/combat/WaveSystem.js',
   './js/progression/ProgressionSystem.js',
   './js/debug/RuntimeAudit.js',
   './js/narrative/NarrativeDirector.js',
+  './js/narrative/PreludeRetainers.js',
   './js/input/TouchControls.js',
   './js/ui/Level1Menu.js',
   './js/scenes/BootScene.js',
