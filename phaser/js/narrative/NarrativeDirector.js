@@ -20,8 +20,8 @@ class NarrativeDirector{
   open(steps,done){this.ensureFallback();this.previousState=this.scene.progression?.state||'playing';if(this.scene.progression){this.scene.progression.state='narrative';this.scene.progression.syncPhysicsPause();}this.active=true;this.steps=steps;this.index=0;this.timer=0;this.waiting=false;this.done=done||null;this.setVisible(true);this.applyStep();}
   close(){this.active=false;this.setVisible(false);if(this.scene.progression){this.scene.progression.state=this.previousState==='narrative'?'playing':this.previousState;this.scene.progression.syncPhysicsPause();}const d=this.done;this.done=null;if(d)d();}
   setStill(key){const tex=key&&this.scene.textures.exists(key)?key:'narrative-fallback';this.image.setTexture(tex).setDisplaySize(this.scene.config.width,this.scene.config.height).setVisible(true);}
-  say(who,text){this.image.setVisible(true);this.hideTextLayers();this.name.setText(who||'');this.text.setText(text||'');this.panel.setVisible(true);this.name.setVisible(true);this.text.setVisible(true);this.waiting=true;}
-  comic(top,bottom,key){this.setStill(key);this.hideTextLayers();this.comicTop.setText(top||'');this.comicBottom.setText(bottom||'');this.comicTop.setVisible(!!top);this.comicBottom.setVisible(!!bottom);this.waiting=true;}
+  say(who,text){this.image.setVisible(true);this.hideTextLayers();this.shade.setAlpha(.32).setVisible(true);this.name.setText(who||'');this.text.setText(text||'');this.panel.setVisible(true);this.name.setVisible(true);this.text.setVisible(true);this.waiting=true;}
+  comic(top,bottom,key){this.setStill(key);this.hideTextLayers();this.shade.setAlpha(.08).setVisible(true);this.comicTop.setText(top||'');this.comicBottom.setText(bottom||'');this.comicTop.setVisible(!!top);this.comicBottom.setVisible(!!bottom);this.waiting=true;}
   interludeCard(text){this.image.setVisible(false);this.shade.setAlpha(1).setVisible(true);this.hideTextLayers();this.interlude.setText(text||'').setVisible(true);this.waiting=true;}
   showRetainers(){this.scene.showPreludeRetainers?.();}
   hideRetainers(){this.scene.hidePreludeRetainers?.();}
