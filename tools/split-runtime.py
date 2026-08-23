@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Split the monolithic game runtime into ordered classic-script modules.
+"""Split the monolithic legacy runtime into ordered classic-script modules.
 
-This is intentionally mechanical: section boundaries come only from the
-existing `/* ================= NAME ================= */` markers, and the
-module bodies are emitted byte-for-byte in their original order.
+The legacy runtime is retained for reference only. This tool is intentionally
+idempotent: if src/game.html is already wired to src/js/modules/*.js, it
+verifies the split state and exits successfully instead of failing because the
+original js/game.js script tag is no longer present.
 """
 from __future__ import annotations
 
@@ -17,7 +18,8 @@ HTML = ROOT / "src" / "game.html"
 MODULE_DIR = ROOT / "src" / "js" / "modules"
 
 HEADER_RE = re.compile(r"(?m)^/\*\s*=+\s*(.*?)\s*=+\s*\*/\s*$")
-SCRIPT_RE = re.compile(r'(?m)^<script\s+src=["\']js/game\.js["\']></script>\s*$')
+SCRIPT_RE = re.compile(r'''(?m)^<script\s+src=["']js/game\.js["']></script>\s*$''')
+MODULE_TAG_RE = re.compile(r'''(?m)^<script\s+src=["']js/modules/([^"']+\.js)["']></script>\s*$''')
 
 
 def slug(value: str) -> str:
@@ -26,8 +28,39 @@ def slug(value: str) -> str:
     return value or "section"
 
 
+def verify_already_split(document: str, source: str) -> bool:
+    """Return True when the legacy HTML is already wired to split modules.
+
+    We deliberately avoid requiring byte-for-byte reconstruction here because
+    the migration has made src/ a preserved legacy/reference runtime and the
+    splitter should no longer mutate it repeatedly on every CI run.
+    """
+    if SCRIPT_RE.search(document):
+        return False
+
+    module_names = MODULE_TAG_RE.findall(document)
+    if not module_names:
+        return False
+
+    paths = [MODULE_DIR / name for name in module_names]
+    if not all(path.is_file() for path in paths):
+        raise SystemExit("src/game.html references split runtime modules that are missing")
+
+    reconstructed = "".join(path.read_text(encoding="utf-8") for path in paths)
+    if reconstructed != source:
+        raise SystemExit("Split integrity failure: referenced modules do not reconstruct src/js/game.js byte-for-byte")
+
+    print(f"Runtime already split across {len(paths)} modules; verified successfully.")
+    return True
+
+
 def main() -> int:
     source = JS.read_text(encoding="utf-8")
+    document = HTML.read_text(encoding="utf-8")
+
+    if verify_already_split(document, source):
+        return 0
+
     matches = list(HEADER_RE.finditer(source))
     if not matches:
         raise SystemExit("No section markers found in src/js/game.js")
@@ -57,15 +90,13 @@ def main() -> int:
     if reconstructed != source:
         raise SystemExit("Split integrity failure: modules do not reconstruct src/js/game.js byte-for-byte")
 
-    document = HTML.read_text(encoding="utf-8")
-    if not SCRIPT_RE.search(document):
-        raise SystemExit("src/game.html does not contain the expected js/game.js script tag")
-
     tags = "\n".join(
         f'<script src="js/modules/{html.escape(path.name, quote=True)}"></script>'
         for path in module_paths
     )
     updated = SCRIPT_RE.sub(tags, document, count=1)
+    if updated == document:
+        raise SystemExit("src/game.html does not contain the expected js/game.js script tag")
     HTML.write_text(updated, encoding="utf-8")
 
     print(f"Generated {len(module_paths)} runtime modules.")
