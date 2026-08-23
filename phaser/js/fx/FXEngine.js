@@ -30,6 +30,10 @@ class FXEngine {
     const r=this.scene.add.circle(x,y,6,color,0).setStrokeStyle(2,color,0.9).setDepth(67);
     this.scene.tweens.add({targets:r,scale:4+power,alpha:0,duration:180+power*80,ease:'Cubic.easeOut',onComplete:()=>r.destroy()});
   }
+  hit(x,y,power=1,color=0xf2e7ff){
+    this.impact(x,y,color,power);
+    this.hitStop(30+power*18);
+  }
   spellCharge(x,y,power){
     const r=18+power*20;this.glow(x,y,r,0x9d78ff,0.16+power*0.12,180);
     if(Math.random()<0.45)this.sigil(x,y,r+10,0xb18cff,0.35);
