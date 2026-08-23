@@ -46,7 +46,8 @@ def patch_file(path: Path, replacements: dict[str, str]) -> None:
 
 def materialize_images(items: list[dict]) -> dict[str, str]:
     replacements: dict[str, str] = {}
-    missing_local: list[str] = []
+    missing_required: list[str] = []
+    missing_optional: list[str] = []
 
     for item in items:
         path_value = item.get('path')
@@ -55,16 +56,23 @@ def materialize_images(items: list[dict]) -> dict[str, str]:
 
         target = ROOT / path_value
         url = item.get('url')
+        required = bool(item.get('required', False))
 
         if url:
             download(url, target)
             replacements[url] = '../' + path_value
         elif not target.is_file():
-            missing_local.append(path_value)
+            if required:
+                missing_required.append(path_value)
+            else:
+                missing_optional.append(path_value)
 
-    if missing_local:
+    if missing_optional:
+        print('Optional local image assets not present (allowed): ' + ', '.join(missing_optional))
+
+    if missing_required:
         raise SystemExit(
-            'Local/uploaded image assets are missing: ' + ', '.join(missing_local)
+            'Required local/uploaded image assets are missing: ' + ', '.join(missing_required)
         )
 
     return replacements
