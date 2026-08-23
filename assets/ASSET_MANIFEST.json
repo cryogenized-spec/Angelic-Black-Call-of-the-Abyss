@@ -1,7 +1,7 @@
 {
-  "version": 2,
+  "version": 3,
   "generated": false,
-  "notes": "Prototype assets remain available as fallbacks while the production art library is uploaded. UI portraits are now registered separately from cinematic scene art.",
+  "notes": "Prototype assets remain available as fallbacks while the production art library is uploaded. UI portraits and Phaser gameplay sprite sheets are registered separately from cinematic scene art.",
   "images": [
     {"id":"poster","path":"assets/art/cover/cover-main.png"},
     {"id":"fallback","path":"assets/art/cover/cover-fallback.png"},
@@ -28,6 +28,15 @@
     {"id":"comic03","path":"assets/art/comic/comic-03-queen-awakens.png"},
     {"id":"deathA","path":"assets/art/endings/queen-fallen.png"},
     {"id":"deathB","path":"assets/art/endings/game-over.png"}
+  ],
+  "sprites": [
+    {"id":"queenIdle","path":"assets/sprites/player/queen-idle.png","frameWidth":64,"frameHeight":96,"frames":4},
+    {"id":"queenWalk","path":"assets/sprites/player/queen-walk.png","frameWidth":64,"frameHeight":96,"frames":8},
+    {"id":"queenJump","path":"assets/sprites/player/queen-jump.png","frameWidth":64,"frameHeight":96,"frames":4},
+    {"id":"queenCast","path":"assets/sprites/player/queen-cast.png","frameWidth":64,"frameHeight":96,"frames":6},
+    {"id":"queenHurt","path":"assets/sprites/player/queen-hurt.png","frameWidth":64,"frameHeight":96,"frames":3},
+    {"id":"queenDeath","path":"assets/sprites/player/queen-death.png","frameWidth":64,"frameHeight":96,"frames":6},
+    {"id":"queenSpecial","path":"assets/sprites/player/queen-special.png","frameWidth":64,"frameHeight":96,"frames":8}
   ],
   "fonts": [
     {"id":"pressStart","package":"@fontsource/press-start-2p","css":"assets/fonts/press-start-2p/400.css"},

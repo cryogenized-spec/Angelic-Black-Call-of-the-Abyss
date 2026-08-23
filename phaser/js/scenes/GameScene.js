@@ -1,13 +1,34 @@
-/* Phaser M2 — real player sandbox. */
+/* Phaser M3 — Necro Queen sprite/animation sandbox. */
 class GameScene extends Phaser.Scene {
   constructor(){ super('GameScene'); }
 
+  preload(){
+    ANGELIC_QUEEN_ASSETS.queue(this);
+    this.load.on('loaderror', file => {
+      if (file && file.key && file.key.indexOf('queen-') === 0) {
+        this.queenAssetErrors = this.queenAssetErrors || [];
+        this.queenAssetErrors.push(file.key);
+      }
+    });
+  }
+
   create(){
     const cfg = window.ANGELIC_PHASER_CONFIG;
+    this.queenAssetErrors = this.queenAssetErrors || [];
     this.cursors = this.input.keyboard.createCursorKeys();
     this.jumpQueued = false;
+    this.actionQueued = null;
+
     this.input.keyboard.on('keydown-SPACE', () => { this.jumpQueued = true; });
     this.input.keyboard.on('keydown-UP', () => { this.jumpQueued = true; });
+
+    const debugActions = {
+      ONE: 'idle', TWO: 'walk', THREE: 'jump', FOUR: 'cast',
+      FIVE: 'hurt', SIX: 'death', SEVEN: 'special'
+    };
+    Object.entries(debugActions).forEach(([key, action]) => {
+      this.input.keyboard.on('keydown-' + key, () => { this.actionQueued = action; });
+    });
 
     this.cameras.main.setBackgroundColor('#0b0611');
     this.cameras.main.setBounds(0, 0, cfg.worldWidth, cfg.height);
@@ -35,21 +56,28 @@ class GameScene extends Phaser.Scene {
     this.ground.refreshBody();
 
     this.createQueenFallbackTexture();
-    this.createQueenAnimations();
+    ANGELIC_QUEEN_ASSETS.defineAnimations(this);
 
-    this.queen = new NecroQueen(this, 240, cfg.ground, 'queen-fallback');
+    const initialTexture = this.textures.exists('queen-idle') ? 'queen-idle' : 'queen-fallback';
+    this.queen = new NecroQueen(this, 240, cfg.ground, initialTexture);
     this.physics.add.collider(this.queen, this.ground);
+    this.queen.setAnimationState();
 
-    this.add.text(28, 22, 'PHASER M2 • NECRO QUEEN PLAYER FOUNDATION', {
+    this.add.text(28, 22, 'PHASER M3 • NECRO QUEEN SPRITE PIPELINE', {
       fontFamily:'monospace', fontSize:'13px', color:'#d8a94e', stroke:'#000000', strokeThickness:4
     }).setScrollFactor(0);
 
     this.status = this.add.text(28, 46, '', {
-      fontFamily:'monospace', fontSize:'11px', color:'#8f9ab0', stroke:'#000000', strokeThickness:3
+      fontFamily:'monospace', fontSize:'11px', color:'#8f9ab0', stroke:'#000000', strokeThickness:3,
+      lineSpacing: 4
     }).setScrollFactor(0);
 
     this.add.text(cfg.width-28, 22, '← → MOVE   SPACE / ↑ JUMP', {
       fontFamily:'monospace', fontSize:'11px', color:'#b18cff', stroke:'#000000', strokeThickness:3
+    }).setOrigin(1,0).setScrollFactor(0);
+
+    this.add.text(cfg.width-28, 54, '1 IDLE  2 WALK  3 JUMP  4 CAST  5 HURT  6 DEATH  7 SPECIAL', {
+      fontFamily:'monospace', fontSize:'9px', color:'#8f9ab0', stroke:'#000000', strokeThickness:3
     }).setOrigin(1,0).setScrollFactor(0);
 
     this.cameras.main.startFollow(this.queen, true, 0.08, 0.08);
@@ -59,6 +87,12 @@ class GameScene extends Phaser.Scene {
 
   update(time, delta){
     const dt = Math.min(delta, 50) / 1000;
+
+    if (this.actionQueued) {
+      this.queen.playAction(this.actionQueued);
+      this.actionQueued = null;
+    }
+
     this.queen.updateControl(this.cursors, this.jumpQueued, dt);
     this.jumpQueued = false;
     this.queen.setAnimationState();
@@ -69,10 +103,15 @@ class GameScene extends Phaser.Scene {
     const camX = this.cameras.main.midPoint.x;
     this.cameras.main.scrollX += (targetX - camX) * 0.08;
 
+    const installed = ANGELIC_QUEEN_ASSETS.installed(this);
+    const installedLabel = installed.length ? installed.map(key => key.replace('queen-','')).join(', ') : 'none — fallback active';
+    const errors = this.queenAssetErrors.length ? ` | missing: ${this.queenAssetErrors.length}` : '';
+
     this.status.setText(
       `x ${Math.round(this.queen.x)}  y ${Math.round(this.queen.y)}  ` +
       `vx ${Math.round(this.queen.body.velocity.x)}  vy ${Math.round(this.queen.body.velocity.y)}  ` +
-      `state ${this.queen.state}`
+      `state ${this.queen.state}\n` +
+      `loaded: ${installedLabel}${errors}`
     );
   }
 
@@ -91,14 +130,5 @@ class GameScene extends Phaser.Scene {
     g.fillStyle(0x554a3d,1); g.fillRect(14,54,36,4); g.fillRect(16,60,32,3);
     g.generateTexture('queen-fallback',64,96);
     g.destroy();
-  }
-
-  createQueenAnimations(){
-    // Frame contracts are reserved for the real extracted video frames.
-    // Once queen sheets exist, M2b will load them and these keys remain unchanged.
-    this.anims.create({key:'queen-idle',frames:[{key:'queen-fallback'}],frameRate:4,repeat:-1});
-    this.anims.create({key:'queen-walk',frames:[{key:'queen-fallback'}],frameRate:8,repeat:-1});
-    this.anims.create({key:'queen-jump',frames:[{key:'queen-fallback'}],frameRate:6,repeat:0});
-    this.anims.create({key:'queen-fall',frames:[{key:'queen-fallback'}],frameRate:6,repeat:0});
   }
 }
