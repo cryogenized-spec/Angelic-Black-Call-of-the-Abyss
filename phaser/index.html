@@ -25,7 +25,7 @@
   <script>
     (function(){
       const gate=document.getElementById('start-overlay');
-      async functionenter(){
+      async function enter(){
         try{if(document.documentElement.requestFullscreen&&!document.fullscreenElement)await document.documentElement.requestFullscreen();}catch(e){}
         try{if(screen.orientation&&screen.orientation.lock)await screen.orientation.lock('landscape');}catch(e){}
         gate.style.display='none';
@@ -49,6 +49,7 @@
   <script src="js/debug/RuntimeAudit.js"></script>
   <script src="js/narrative/NarrativeDirector.js"></script>
   <script src="js/input/TouchControls.js"></script>
+  <script src="js/ui/Level1Menu.js"></script>
   <script src="js/scenes/BootScene.js"></script>
   <script src="js/scenes/GameScene.js"></script>
   <script src="js/main.js"></script>
