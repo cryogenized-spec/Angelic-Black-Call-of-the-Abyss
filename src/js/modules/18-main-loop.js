@@ -74,7 +74,11 @@ function loop(now){
       requestAnimationFrame(loop);
     });
   }
-  loadScript('js/modules/23-landscape-presentation.js',startRuntime,function(){
+  loadScript('js/modules/23-landscape-presentation.js',function(){
+    loadScript('js/modules/24-ui-portrait-registry.js',startRuntime,function(){
+      startRuntime();
+    });
+  },function(){
     startRuntime();
   });
 })();
