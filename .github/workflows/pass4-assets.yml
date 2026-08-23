@@ -24,6 +24,12 @@ jobs:
       - name: Materialize prototype assets
         run: python3 tools/materialize-assets.py
 
+      - name: Validate Phaser scene syntax
+        run: |
+          node --check phaser/js/scenes/GameScene.js
+          node --check phaser/js/main.js
+          node --check phaser/js/boot/EngineLoader.js
+
       - name: Verify no external runtime asset URLs remain in shipped Phaser app
         run: |
           if grep -RInE 'image\.qwenlm\.ai|cdn\.jsdelivr\.net/fontsource/css|fonts\.googleapis\.com|fonts\.gstatic\.com' phaser --include='*.html' --include='*.css' --include='*.js'; then
