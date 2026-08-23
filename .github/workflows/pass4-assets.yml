@@ -34,8 +34,8 @@ jobs:
       - name: Commit materialized assets
         run: |
           git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add assets src tools/materialize-assets.py .github/workflows/pass4-assets.yml
+          git config user.email '41898282+github-actions[bot].users.noreply.github.com'
+          git add assets tools/materialize-assets.py .github/workflows/pass4-assets.yml
           if git diff --cached --quiet; then
             echo 'No generated changes.'
             exit 0
