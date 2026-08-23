@@ -47,12 +47,26 @@ def patch_file(path: Path, replacements: dict[str, str]) -> None:
 def main() -> None:
     manifest = json.loads(MANIFEST.read_text(encoding='utf-8'))
     image_replacements: dict[str, str] = {}
-    for item in manifest['images']:
-        target = ROOT / item['path']
-        download(item['url'], target)
-        image_replacements[item['url']] = '../' + item['path']
+    local_only = []
 
-    for item in manifest['fonts']:
+    for item in manifest.get('images', []):
+        if 'path' not in item:
+            raise SystemExit(f"Invalid image manifest entry without path: {item!r}")
+
+        target = ROOT / item['path']
+        url = item.get('url')
+
+        if url:
+            download(url, target)
+            image_replacements[url] = '../' + item['path']
+        elif target.exists():
+            local_only.append(item['path'])
+        else:
+            raise SystemExit(
+                f"Image asset has no url and is not present locally: {item['path']}"
+            )
+
+    for item in manifest.get('fonts', []):
         vendor_font(item['package'], item['css'])
 
     patch_file(ROOT / 'src/js/modules/01-setup.js', image_replacements)
@@ -72,6 +86,11 @@ def main() -> None:
             remaining.append(str(file.relative_to(ROOT)))
     if remaining:
         raise SystemExit('External runtime asset URLs remain in: ' + ', '.join(remaining))
+
+    if local_only:
+        print('Local-only image assets retained:')
+        for path in local_only:
+            print(f'  - {path}')
 
 
 if __name__ == '__main__':
