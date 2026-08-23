@@ -37,7 +37,7 @@
   </script>
   <script src="js/boot/EngineLoader.js"></script>
   <script>
-    if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{}));}
+    if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=3',{scope:'./'}).then(r=>r.update()).catch(()=>{}));}
   </script>
 </body>
 </html>
