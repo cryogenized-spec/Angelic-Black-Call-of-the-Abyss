@@ -12,6 +12,12 @@ class NecroQueen extends Phaser.Physics.Arcade.Sprite {
     this.jumpBuffer = 0;
     this.actionTimer = 0;
     this.actionState = null;
+    this.maxHp = 100;
+    this.hp = 100;
+    this.maxMana = 100;
+    this.mana = 100;
+    this.manaRegen = 6;
+    this.invulnerable = false;
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
