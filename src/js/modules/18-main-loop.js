@@ -55,21 +55,26 @@ function loop(now){
 }
 
 (function loadRuntimeHardening(){
-  var script=document.createElement('script');
-  script.src='js/modules/19-runtime-hardening.js';
-  script.onload=function(){
-    if(window.__ANGELIC_BLACK_RUNTIME__&&!window.__ANGELIC_BLACK_RUNTIME__.ready){
-      window.__ANGELIC_BLACK_RUNTIME__.reportFatal(new Error('Runtime dependency validation did not complete.'));
-      return;
-    }
-    requestAnimationFrame(loop);
-  };
-  script.onerror=function(){
-    if(window.__ANGELIC_BLACK_RUNTIME__){
-      window.__ANGELIC_BLACK_RUNTIME__.reportFatal(new Error('Failed to load runtime hardening module.'));
-      return;
-    }
-    requestAnimationFrame(loop);
-  };
-  document.body.appendChild(script);
+  function loadScript(src,onload,onerror){
+    var script=document.createElement('script');
+    script.src=src; script.onload=onload; script.onerror=onerror; document.body.appendChild(script);
+  }
+  function startRuntime(){
+    loadScript('js/modules/19-runtime-hardening.js',function(){
+      if(window.__ANGELIC_BLACK_RUNTIME__&&!window.__ANGELIC_BLACK_RUNTIME__.ready){
+        window.__ANGELIC_BLACK_RUNTIME__.reportFatal(new Error('Runtime dependency validation did not complete.'));
+        return;
+      }
+      requestAnimationFrame(loop);
+    },function(){
+      if(window.__ANGELIC_BLACK_RUNTIME__){
+        window.__ANGELIC_BLACK_RUNTIME__.reportFatal(new Error('Failed to load runtime hardening module.'));
+        return;
+      }
+      requestAnimationFrame(loop);
+    });
+  }
+  loadScript('js/modules/23-landscape-presentation.js',startRuntime,function(){
+    startRuntime();
+  });
 })();
