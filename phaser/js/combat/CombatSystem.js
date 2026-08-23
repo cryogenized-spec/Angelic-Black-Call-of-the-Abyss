@@ -1,4 +1,4 @@
-/* Phaser M9 combat system + reusable FX hooks. */
+/* Phaser M16 combat system — Phaser 4-safe group iteration. */
 class CombatSystem {
   constructor(scene,queen){
     this.scene=scene;this.queen=queen;this.projectiles=scene.physics.add.group();this.enemies=scene.physics.add.group();this.enemyProjectiles=scene.physics.add.group();
@@ -16,8 +16,8 @@ class CombatSystem {
   enemyProjectileHit(projectile){if(!projectile.active)return;const damage=projectile.getData('damage')||10;const dir=projectile.body.velocity.x<0?-1:1;this.queen.receiveDamage(damage,dir);this.scene.fx?.hit(this.queen.x,this.queen.y-48,0.9,0xa42c46);projectile.destroy();}
   onEnemyKilled(enemy){this.waveKills++;this.totalKills++;this.scene.fx?.death(enemy.x,enemy.y-35,enemy instanceof GraveLordBoss?0xa42c46:0x6d5a8f);if(this.scene.progression)this.scene.progression.awardXp(enemy instanceof GraveLordBoss?80:12);if(this.scene.pickups&&Math.random()<0.22)this.scene.pickups.drop(enemy.x,enemy.y-18,Math.random()<0.5?'heart':'shard');}
   update(delta){const dt=Math.min(delta,50)/1000;if(this.castCooldown>0)this.castCooldown=Math.max(0,this.castCooldown-dt);if(this.charging){this.chargeTime+=dt;const p=Phaser.Math.Clamp(this.chargeTime/2,0,1);this.scene.fx?.spellCharge(this.queen.x+(this.queen.face||1)*22,this.queen.y-60,p);}
-    this.projectiles.children.each(p=>{if(!p||!p.active)return;this.scene.fx?.trail(p.x,p.y,0xb18cff);const life=(p.getData('life')||0)-dt;p.setData('life',life);p.scale=1+Math.sin(performance.now()*0.02)*0.08;if(life<=0||p.x<-80||p.x>this.scene.config.worldWidth+80)p.destroy();});
-    this.enemyProjectiles.children.each(p=>{if(!p||!p.active)return;const kind=p.getData('kind');this.scene.fx?.trail(p.x,p.y,kind==='boss'?0xa42c46:0x6d5a8f);const life=(p.getData('life')||0)-dt;p.setData('life',life);if(life<=0||p.x<-80||p.x>this.scene.config.worldWidth+80)p.destroy();});
-    this.enemies.children.each(e=>{if(!e||!e.active)return;e.updateAI(this.queen,dt);});this.damageFlash=Math.max(0,this.damageFlash-dt);this.mana+=this.queen.manaRegen*dt;}
+    this.projectiles.getChildren().forEach(p=>{if(!p||!p.active)return;this.scene.fx?.trail(p.x,p.y,0xb18cff);const life=(p.getData('life')||0)-dt;p.setData('life',life);p.scale=1+Math.sin(performance.now()*0.02)*0.08;if(life<=0||p.x<-80||p.x>this.scene.config.worldWidth+80)p.destroy();});
+    this.enemyProjectiles.getChildren().forEach(p=>{if(!p||!p.active)return;const kind=p.getData('kind');this.scene.fx?.trail(p.x,p.y,kind==='boss'?0xa42c46:0x6d5a8f);const life=(p.getData('life')||0)-dt;p.setData('life',life);if(life<=0||p.x<-80||p.x>this.scene.config.worldWidth+80)p.destroy();});
+    this.enemies.getChildren().forEach(e=>{if(!e||!e.active)return;e.updateAI(this.queen,dt);});this.damageFlash=Math.max(0,this.damageFlash-dt);this.mana+=this.queen.manaRegen*dt;}
   spawnEnemy(kind='knight',x){const Cls=ANGELIC_ENEMY_ROSTER[kind]||ANGELIC_ENEMY_ROSTER.knight;const y=kind==='bat'?this.scene.config.ground-150:this.scene.config.ground;const enemy=new Cls(this.scene,x??(this.queen.x+520),y);this.enemies.add(enemy);this.scene.physics.add.collider(enemy,this.scene.world.groundBody);return enemy;}
 }
